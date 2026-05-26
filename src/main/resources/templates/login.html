@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ログインポータル (Thymeleaf 骨格サンプル)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            border-radius: 8px;
+            padding: 30px;
+            width: 360px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+        .message-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .message-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-box">
+    <h2>MyIAM ログイン</h2>
+
+    <!-- 
+        【Thymeleaf 機能展示 ①: th:if】
+        条件分岐: URLパラメータに "error" が含まれている場合（ログイン失敗時）にこのブロックを描画する
+    -->
+    <div th:if="${param.error}" class="message-error">
+        ログインに失敗しました。ユーザー名またはパスワードを確認してください。
+    </div>
+
+    <!-- 
+        【Thymeleaf 機能展示 ②: th:if】
+        条件分岐: URLパラメータに "logout" が含まれている場合（ログアウト成功時）にこのブロックを描画する
+    -->
+    <div th:if="${param.logout}" class="message-success">
+        ログアウトに成功しました。
+    </div>
+
+    <!-- 
+        【Thymeleaf 機能展示 ③: th:action】
+        パス生成: `@{~}` 構文を使用して、コンテキストパスに対応したポスト先 URL（/login）を自動生成する
+    -->
+    <form th:action="@{/login}" method="post">
+        
+        <!-- 
+            【Thymeleaf 機能展示 ④: CSRF 対策】
+            Spring Security の CSRF 保護トークン。
+            Thymeleaf の th:action を使うと自動挿入される場合が多いですが、以下のように明示的に書くことで確実に統合されます。
+        -->
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="form-group">
+            <label for="username">ユーザー名:</label>
+            <input type="text" id="username" name="username" required autofocus placeholder="username" value="test" />
+        </div>
+
+        <div class="form-group">
+            <label for="password">パスワード:</label>
+            <input type="password" id="password" name="password" required placeholder="password" value="test"/>
+        </div>
+
+        <button type="submit" class="btn-submit">ログイン</button>
+    </form>
+</div>
+
+</body>
+</html>

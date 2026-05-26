@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      tracking-modes: cookie
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/my_iam
+    username: user
+    password: password
+  jooq:
+    sql-dialect: POSTGRES
+  data:
+    redis:
+      host: localhost
+      port: 16379
+
+logging:
+  level:
+    root: INFO
+    com.myiam: DEBUG
+
+jwt:
+  key:
+    rotation:
+      cron: "0 0 1 1 * ?"
+    ttl: P35D
+
+app:
+  cache:
+    specs:
+      jwk: "expireAfterWrite=1h,maximumSize=50"
+      registered_client: "expireAfterWrite=10m,maximumSize=100"
+      registered_client_id_map: "expireAfterWrite=10d,maximumSize=9999"

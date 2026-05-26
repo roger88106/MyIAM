@@ -1,4 +1,4 @@
-package com.my_iam;
+package com.myiam;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

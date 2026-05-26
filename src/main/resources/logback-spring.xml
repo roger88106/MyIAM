@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 
+        Spring Boot のデフォルトのログ設定（ターミナルの文字色着色、デフォルトパターン等）をインクルード 
+    -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- 
+        =============================================================================
+        コンソール出力設定 (Console Appender Only)
+        =============================================================================
+    -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Spring Boot 既定のカラー着色パターンを適用 -->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 
+        =============================================================================
+        詳細ログレベル微調整 (Fine-Grained Logger Level)
+        =============================================================================
+    -->
+
+    <!-- Spring Security のデバッグログを有効化 -->
+    <logger name="org.springframework.security" level="DEBUG" />
+
+    <!-- Spring Security OAuth2 認可サーバーのデバッグログ -->
+    <logger name="org.springframework.security.oauth2" level="TRACE" />
+
+    <!-- jOOQ データベースログ: SQL実行とバインドパラメータのデバッグログ出力 -->
+    <logger name="org.jooq.tools.LoggerListener" level="DEBUG" />
+
+    <!-- Spring Boot 内部の標準ログレベル設定 -->
+    <logger name="org.springframework.web" level="INFO" />
+    <logger name="org.springframework.boot" level="INFO" />
+
+    <!-- 
+        =============================================================================
+        全体ログ出力設定 (Root Logger)
+        =============================================================================
+    -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
