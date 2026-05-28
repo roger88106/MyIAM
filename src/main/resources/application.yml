@@ -16,6 +16,8 @@ spring:
     redis:
       host: localhost
       port: 16379
+  modulith:
+    detection-strategy: explicitly-annotated
 
 logging:
   level:
