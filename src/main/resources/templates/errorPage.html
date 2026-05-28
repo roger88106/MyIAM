@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>エラー画面 (Thymeleaf 骨格サンプル)</title>
+    <title>エラー画面</title>
     <style>
         body {
             font-family: sans-serif;
@@ -63,29 +63,25 @@
     <h2>エラーが発生しました</h2>
 
     <!-- 
-        【Thymeleaf 機能展示 ①: th:text】
         テキスト出力: Controller から Model に渡された error.errorCode の値を安全にテキスト出力する
     -->
-    <div class="error-code" th:text="${error != null ? error.errorCode : 'OAuth2 Error'}">
+    <div class="error-code" th:text="${error.errorCode}">
         Status 500
     </div>
 
     <!-- 
-        【Thymeleaf 機能展示 ②: th:text】
         テキスト出力: Controller から Model に渡された error.description の値を安全にテキスト出力する
     -->
-    <div class="error-msg" th:text="${error != null ? error.description : '予期しないエラーが発生しました。'}">
+    <div class="error-msg" th:text="${error.description}">
         エラーの具体的な原因がここに表示されます。
     </div>
 
     <div class="action-area">
         <!-- 
-            【Thymeleaf 機能展示 ③: th:if】
             条件分岐: Model 内に clientId が存在し、空でない場合にのみこのリダイレクトボタンをレンダリングする
         -->
         <div th:if="${clientId != null && !clientId.isEmpty()}">
             <!-- 
-                【Thymeleaf 機能展示 ④: th:href とパラメータ付き URL 生成】
                 URL生成: パラメータ付きの URL（例: /?client_id=xxx）をコンテキストパスを考慮して動的に生成する
             -->
             <a th:href="@{/(client_id=${clientId})}" class="btn btn-primary">
@@ -94,7 +90,6 @@
         </div>
 
         <!-- 
-            【Thymeleaf 機能展示 ⑤: th:href】
             シンプルなページ遷移リンクの生成
         -->
         <a th:href="@{/login}" class="btn btn-secondary">

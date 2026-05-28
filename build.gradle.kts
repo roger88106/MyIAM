@@ -153,7 +153,7 @@ jooq {
                             org.jooq.meta.jaxb.ForcedType().apply {
                                 userType = "tools.jackson.databind.JsonNode"
                                 isJsonConverter = true
-                                includeTypes = "(?i)jsonb|json?"
+                                includeTypes = "jsonb"
                             }
                         ))
                     }

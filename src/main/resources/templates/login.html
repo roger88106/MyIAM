@@ -103,12 +103,14 @@
 
         <div class="form-group">
             <label for="username">ユーザー名:</label>
-            <input type="text" id="username" name="username" required autofocus placeholder="username" value="test" />
+            <input type="text" id="username" name="username" required autofocus placeholder="username"
+                   th:value="${@environment.acceptsProfiles('dev') ? 'test' : ''}" />
         </div>
 
         <div class="form-group">
             <label for="password">パスワード:</label>
-            <input type="password" id="password" name="password" required placeholder="password" value="test"/>
+            <input type="password" id="password" name="password" required placeholder="password"
+                   th:value="${@environment.acceptsProfiles('dev') ? 'test' : ''}" />
         </div>
 
         <button type="submit" class="btn-submit">ログイン</button>
