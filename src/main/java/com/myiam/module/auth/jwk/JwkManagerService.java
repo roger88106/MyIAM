@@ -1,5 +1,6 @@
 package com.myiam.module.auth.jwk;
 
+import com.myiam.common.error.SystemException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import jakarta.annotation.PostConstruct;
@@ -97,7 +98,7 @@ class JwkManagerService {
                 parsedJwks.add(parsedJwk);
             }
         } catch (Exception e) {
-            throw new JwkException("JWK Parse Error", e);
+            throw SystemException.of("JWK Parse Error.", e);
         }
 
         // 変換後のJWKリストをJWKSetオブジェクトとして返却

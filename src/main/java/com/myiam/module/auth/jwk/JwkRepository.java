@@ -1,5 +1,6 @@
 package com.myiam.module.auth.jwk;
 
+import com.myiam.common.error.SystemException;
 import com.myiam.jooq.myiam.tables.records.Oauth2JwksRecord;
 import com.myiam.module.auth.core.constant.CacheNameConst;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -93,7 +94,7 @@ class JwkRepository {
         try {
             key = RSAKey.parse(record.getKey().toString());
         } catch (ParseException e) {
-            throw new JwkException("Jwk の変換が失敗しました", e);
+            throw SystemException.of("Jwk conversion failed.", e);
         }
 
         return Jwk.builder()

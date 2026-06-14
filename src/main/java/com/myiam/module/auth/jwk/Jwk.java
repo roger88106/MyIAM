@@ -1,5 +1,6 @@
 package com.myiam.module.auth.jwk;
 
+import com.myiam.common.error.SystemException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -43,7 +44,7 @@ record Jwk(UUID id, KeyData data) {
             // JWK 作成
             return new Jwk(UUID.randomUUID(), new KeyData(kid, rsaKey, true, now.plus(ttl), now));
         } catch (Exception e) {
-            throw new JwkException("Key Generation Error", e);
+            throw SystemException.of("Key Generation Error", e);
         }
     }
 
