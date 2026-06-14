@@ -1,28 +1,56 @@
 package com.myiam.common.error;
 
+import com.myiam.common.utility.error.ErrorUtils;
+import lombok.NonNull;
+
+import java.util.Map;
+
 /**
- * システム予期せぬ重大なエラー。
- * この例外が発生した場合、システムが不安定な状態にあるか、発生してはならない技術的なエラーが発生したことを意味します。
- * グローバル例外ハンドラーはこの例外をキャッチし、HTTP 500 を返すべきです。
+ * システム上予期せぬエラー。 ※HTTP 500系
  */
-public class SystemException extends RuntimeException {
+public class SystemException extends BaseException {
 
     /**
-     * コンストラクタ。
+     * {@code SystemException}の新しいインスタンスを作成して返します。
      *
-     * @param message エラーメッセージ
+     * @param debugMessage デバッグ用メッセージ
+     * @param cause        原因となった例外
+     * @param codeEnum     エラーコード列挙型
+     * @param paramValues  エラーメッセージの引数値（該当する場合）
+     * @return 指定されたパラメータで初期化された新しい{@code SystemException}インスタンス
      */
-    public SystemException(String message) {
-        super(message);
+    public static SystemException of(String debugMessage, Throwable cause, @NonNull ErrorCode.Enum codeEnum, Object... paramValues) {
+
+        // エラーコード取得
+        ErrorCode errorCode = codeEnum.getErrorCode();
+
+        // メッセージパラメータマップを構築する
+        Map<String, String> params = ErrorUtils.buildMessageParams(errorCode, paramValues);
+
+
+        return new SystemException(debugMessage, cause, errorCode, params);
+    }
+
+    /**
+     * {@code SystemException}の新しいインスタンスを作成して返します。
+     *
+     * @param debugMessage デバッグ用メッセージ
+     * @param cause        原因となった例外
+     * @return 指定されたパラメータで初期化された新しい{@code SystemException}インスタンス
+     */
+    public static SystemException of(String debugMessage, Throwable cause) {
+        return new SystemException(debugMessage, cause, ErrorCode.SYSTEM_ERROR, Map.of());
     }
 
     /**
      * コンストラクタ。
      *
-     * @param message エラーメッセージ
-     * @param cause 原因となった例外
+     * @param debugMessage デバッグ用メッセージ
+     * @param cause        原因となった例外
+     * @param errorCode    エラーコード
+     * @param params       エラーメッセージの引数
      */
-    public SystemException(String message, Throwable cause) {
-        super(message, cause);
+    private SystemException(String debugMessage, Throwable cause, ErrorCode errorCode, Map<String, String> params) {
+        super(debugMessage, cause, errorCode.code(), errorCode.errorType(), params);
     }
 }

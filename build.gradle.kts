@@ -87,6 +87,9 @@ dependencies {
     // ハッシュアルゴリズム
     implementation("com.google.guava:guava:33.6.0-android")
 
+    // jMolecules
+    implementation("org.jmolecules:jmolecules-ddd:1.9.0")
+
     // --- テストフレームワーク ---
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
