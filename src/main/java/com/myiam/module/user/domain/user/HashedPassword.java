@@ -1,6 +1,6 @@
 package com.myiam.module.user.domain.user;
 
-import com.myiam.common.error.BusinessException;
+import com.myiam.common.error.SystemException;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.regex.Pattern;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * @param value パスワード (ハッシュ後)
  */
 @ValueObject
-public record Password(String value) {
+public record HashedPassword(String value) {
 
     /**
      * パスワードハッシュの正規表現 <br />
@@ -25,12 +25,12 @@ public record Password(String value) {
      *
      * @param value パスワード (ハッシュ後)
      */
-    public Password {
+    public HashedPassword {
         // パスワードハッシュの検証
         if (value == null || value.isBlank()) {
-            throw BusinessException.of("Password can't be blank", UserErrorCode.INVALID_PASSWORD);
+            throw SystemException.of("password can't be blank", null, UserErrorCode.PASSWORD_HASH_IS_BLANK);
         } else if (!STRUCTURE_PATTERN.matcher(value).matches()) {
-            throw BusinessException.of("Password structure is invalid", UserErrorCode.INVALID_PASSWORD);
+            throw SystemException.of("password is not encoded", null, UserErrorCode.PASSWORD_NOT_ENCODED);
         }
     }
 }

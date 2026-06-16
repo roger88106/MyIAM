@@ -18,6 +18,8 @@ import java.util.UUID;
 @EqualsAndHashCode(of = "id")
 public class User extends AggregateRoot {
 
+// ============================== フィールド定義 ==============================
+
     /**
      * ユーザー ID
      */
@@ -32,7 +34,7 @@ public class User extends AggregateRoot {
     /**
      * パスワード
      */
-    private Password password;
+    private HashedPassword password;
 
     /**
      * ユーザープロファイル
@@ -55,7 +57,7 @@ public class User extends AggregateRoot {
      * @param profile  ユーザープロファイル
      * @param status   ユーザーステータス
      */
-    private User(UUID id, UserIdentity identity, Password password, UserProfile profile, UserStatus status) {
+    private User(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile, UserStatus status) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.identity = Objects.requireNonNull(identity, "identity must not be null");
         this.password = Objects.requireNonNull(password, "password must not be null");
@@ -68,18 +70,18 @@ public class User extends AggregateRoot {
     /**
      * 登録ユーザを作成する
      *
-     * @param identity ユーザーの識別情報
-     * @param password パスワード
-     * @param profile  ユーザープロファイル
+     * @param identity    ユーザーの識別情報
+     * @param rawPassword パスワード
+     * @param profile     ユーザープロファイル
      * @return 登録ユーザ
      */
-    public static User register(UserIdentity identity, Password password, UserProfile profile) {
+    public static User register(@NonNull UserIdentity identity, @NonNull RawPassword rawPassword, @NonNull UserProfile profile, @NonNull PasswordHasher passwordHasher) {
 
         // 新規ユーザーID取得
         UUID id = UUID.randomUUID();
 
         // 登録ユーザ作成
-        User user = new User(id, identity, password, profile, UserStatus.newlyCreated());
+        User user = new User(id, identity, passwordHasher.hash(rawPassword), profile, UserStatus.newlyCreated());
 
         // イベント登録：ユーザーが登録された
         user.registerEvent(UserRegistered.of(id));
@@ -93,12 +95,12 @@ public class User extends AggregateRoot {
      *
      * @param password 新しいパスワード
      */
-    public void changePassword(@NonNull Password password) {
+    public void changePassword(@NonNull RawPassword password, @NonNull PasswordHasher passwordHasher) {
         // ユーザーは既に無効化されている場合、エラーとする
         throwIfDisabled();
 
         // パスワード変更
-        this.password = password;
+        this.password = passwordHasher.hash(password);
 
         // ステータス更新
         status = status.recordPasswordChange();
@@ -160,7 +162,8 @@ public class User extends AggregateRoot {
      * @param status   ユーザーステータス
      */
     @Builder
-    public record Snapshot(UUID id, UserIdentity identity, Password password, UserProfile profile, UserStatus status) {
+    public record Snapshot(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile,
+                           UserStatus status) {
     }
 
     /**
