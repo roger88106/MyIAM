@@ -23,10 +23,10 @@ public record RawPassword(String value) {
      */
     public RawPassword {
         if (value == null || value.isBlank()) {
-            throw BusinessException.of("password can't be blank", UserErrorCode.INVALID_PASSWORD);
+            throw BusinessException.of("password can't be blank", UserErrorCode.INVALID_PASSWORD_FORMAT);
         }
         if (!value.matches(PASSWORD_REGEX)) {
-            throw BusinessException.of("password must contain at least one letter and one number", UserErrorCode.INVALID_PASSWORD);
+            throw BusinessException.of("password must contain at least one letter and one number", UserErrorCode.INVALID_PASSWORD_FORMAT);
         }
     }
 }

@@ -19,6 +19,9 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+### AI ###
+CLAUDE.md
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

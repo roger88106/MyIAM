@@ -12,6 +12,14 @@ import java.util.UUID;
 public interface UserRepository {
 
     /**
+     * ユーザー存在チェック
+     *
+     * @param identity ユーザーの識別情報
+     * @return 存在する場合 {@code true}, 存在しない場合 {@code false}
+     */
+    boolean existsByIdentity(UserIdentity identity);
+
+    /**
      * ユーザー取得
      *
      * @param id ユーザー ID
@@ -25,11 +33,4 @@ public interface UserRepository {
      * @param user ユーザー ドメインモデル
      */
     void save(User user);
-
-    /**
-     * ユーザー削除
-     *
-     * @param user ユーザー ドメインモデル
-     */
-    void remove(User user);
 }

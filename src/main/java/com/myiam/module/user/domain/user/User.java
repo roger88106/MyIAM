@@ -65,6 +65,15 @@ public class User extends AggregateRoot {
         this.status = Objects.requireNonNull(status, "status must not be null");
     }
 
+// ============================== Getter ==============================
+
+    /**
+     * @return ユーザー ID
+     */
+    public UUID id() {
+        return id;
+    }
+
 // ============================== ドメインの振る舞い ==============================
 
     /**
@@ -73,6 +82,7 @@ public class User extends AggregateRoot {
      * @param identity    ユーザーの識別情報
      * @param rawPassword パスワード
      * @param profile     ユーザープロファイル
+     * @param passwordHasher パスワードハッシュ化処理クラス
      * @return 登録ユーザ
      */
     public static User register(@NonNull UserIdentity identity, @NonNull RawPassword rawPassword, @NonNull UserProfile profile, @NonNull PasswordHasher passwordHasher) {
@@ -93,14 +103,21 @@ public class User extends AggregateRoot {
     /**
      * パスワードを変更する
      *
-     * @param password 新しいパスワード
+     * @param oldPassword 古いパスワード
+     * @param newPassword 新しいパスワード
+     * @param passwordHasher パスワードハッシュ化処理クラス
      */
-    public void changePassword(@NonNull RawPassword password, @NonNull PasswordHasher passwordHasher) {
+    public void changePassword(@NonNull RawPassword oldPassword, @NonNull RawPassword newPassword,@NonNull PasswordHasher passwordHasher) {
         // ユーザーは既に無効化されている場合、エラーとする
         throwIfDisabled();
 
+        // 古いパスワードが一致していない場合、エラーとする
+        if (!passwordHasher.matches(oldPassword, password)) {
+            throw BusinessException.of("old password is not matched", UserErrorCode.PASSWORD_NOT_MATCHED);
+        }
+
         // パスワード変更
-        this.password = passwordHasher.hash(password);
+        this.password = passwordHasher.hash(newPassword);
 
         // ステータス更新
         status = status.recordPasswordChange();

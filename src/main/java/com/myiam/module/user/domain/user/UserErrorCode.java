@@ -21,18 +21,26 @@ public enum UserErrorCode implements ErrorCode.Enum {
      */
     INVALID_EMAIL_FORMAT(List.of(), ErrorType.VALIDATION_ERROR),
     /**
+     * パスワードのフォーマットが正しくない
+     */
+    INVALID_PASSWORD_FORMAT(List.of(), ErrorType.VALIDATION_ERROR),
+    /**
      * 識別情報が正しくない
      */
     INVALID_IDENTITY(List.of(), ErrorType.VALIDATION_ERROR),
     /**
-     * パスワードが正しくない
-     */
-    INVALID_PASSWORD(List.of(), ErrorType.VALIDATION_ERROR),
-    /**
      * ユーザーが既に無効化されている<br />
-     * ID: [userId]
+     * ID: {userId}
      */
     USER_ALREADY_DISABLED(List.of("userId"), ErrorType.BUSINESS_RULE_ERROR),
+    /**
+     * パスワードが一致していない
+     */
+    PASSWORD_NOT_MATCHED(List.of(), ErrorType.BUSINESS_RULE_ERROR),
+    /**
+     * ユーザー:{user} は既に存在している
+     */
+    USER_ALREADY_EXISTS(List.of("user"), ErrorType.BUSINESS_RULE_ERROR),
     /**
      * ユーザーが存在しない
      */
