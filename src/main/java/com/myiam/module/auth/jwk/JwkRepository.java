@@ -1,7 +1,7 @@
 package com.myiam.module.auth.jwk;
 
 import com.myiam.common.error.SystemException;
-import com.myiam.jooq.myiam.tables.records.Oauth2JwksRecord;
+import com.myiam.jooq.auth.tables.records.Oauth2JwksRecord;
 import com.myiam.module.auth.core.constant.CacheNameConst;
 import com.nimbusds.jose.jwk.RSAKey;
 import lombok.NonNull;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.text.ParseException;
 import java.util.List;
 
-import static com.myiam.jooq.myiam.tables.Oauth2Jwks.OAUTH2_JWKS;
+import static com.myiam.jooq.auth.tables.Oauth2Jwks.OAUTH2_JWKS;
 
 /**
  * JWK リポジトリ

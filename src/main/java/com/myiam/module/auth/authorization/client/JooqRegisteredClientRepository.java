@@ -1,6 +1,6 @@
 package com.myiam.module.auth.authorization.client;
 
-import com.myiam.jooq.myiam.tables.records.Oauth2RegisteredClientRecord;
+import com.myiam.jooq.auth.tables.records.Oauth2RegisteredClientRecord;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jspecify.annotations.NonNull;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.myiam.jooq.myiam.tables.Oauth2RegisteredClient.OAUTH2_REGISTERED_CLIENT;
+import static com.myiam.jooq.auth.tables.Oauth2RegisteredClient.OAUTH2_REGISTERED_CLIENT;
 
 /**
  * 登録クライアント情報リポジトリ。

@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.myiam.jooq.myiam.tables.Oauth2AuthorizationConsent.OAUTH2_AUTHORIZATION_CONSENT;
+import static com.myiam.jooq.auth.tables.Oauth2AuthorizationConsent.OAUTH2_AUTHORIZATION_CONSENT;
 
 /**
  * 認可同意情報リポジトリ。
