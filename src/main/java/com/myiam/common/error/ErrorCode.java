@@ -1,5 +1,7 @@
 package com.myiam.common.error;
 
+import lombok.Getter;
+
 import java.util.List;
 
 /**
@@ -12,14 +14,38 @@ import java.util.List;
 public record ErrorCode(String code, List<String> paramKeys, ErrorType errorType) {
 
     /**
-     * システムエラー
-     */
-    public static final ErrorCode SYSTEM_ERROR = new ErrorCode("SYSTEM_ERROR", List.of(), ErrorType.SYSTEM_ERROR);
-
-    /**
      * エラーコード列挙型用のインターフェース
      */
     public interface Enum {
         ErrorCode getErrorCode();
+    }
+
+    /**
+     * 共通のエラーコード
+     */
+    @Getter
+    public enum Common implements Enum {
+
+        /**
+         * 更新処理排他エラー
+         */
+        CONCURRENT_MODIFICATION (List.of(), ErrorType.CONFLICT_ERROR),
+        /**
+         * リポジトリ復元エラー
+         */
+        RESTORE_ERROR(List.of(), ErrorType.RESTORE_ERROR),
+        ;
+
+        /**
+         * エラーコード
+         */
+        private final ErrorCode errorCode;
+
+        /**
+         * コンストラクタ
+         */
+        Common(List<String> paramKeys, ErrorType errorType) {
+            this.errorCode = new ErrorCode(this.name(), paramKeys, errorType);
+        }
     }
 }

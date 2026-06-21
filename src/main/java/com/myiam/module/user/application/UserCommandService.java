@@ -51,8 +51,8 @@ public class UserCommandService {
         // 登録ユーザ作成
         User user = User.register(identity, rawPassword, profile, passwordHasher);
 
-        // ユーザー保存
-        userRepository.save(user);
+        // ユーザー登録
+        userRepository.add(user);
 
         return user.id();
     }

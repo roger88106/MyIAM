@@ -46,6 +46,11 @@ public class User extends AggregateRoot {
      */
     private UserStatus status;
 
+    /**
+     * バージョン
+     */
+    private final long version;
+
 // ============================== コンストラクタ ==============================
 
     /**
@@ -56,13 +61,15 @@ public class User extends AggregateRoot {
      * @param password パスワード
      * @param profile  ユーザープロファイル
      * @param status   ユーザーステータス
+     * @param version  バージョン
      */
-    private User(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile, UserStatus status) {
+    private User(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile, UserStatus status, long version) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.identity = Objects.requireNonNull(identity, "identity must not be null");
         this.password = Objects.requireNonNull(password, "password must not be null");
         this.profile = Objects.requireNonNull(profile, "profile must not be null");
         this.status = Objects.requireNonNull(status, "status must not be null");
+        this.version = version;
     }
 
 // ============================== Getter ==============================
@@ -79,9 +86,9 @@ public class User extends AggregateRoot {
     /**
      * 登録ユーザを作成する
      *
-     * @param identity    ユーザーの識別情報
-     * @param rawPassword パスワード
-     * @param profile     ユーザープロファイル
+     * @param identity       ユーザーの識別情報
+     * @param rawPassword    パスワード
+     * @param profile        ユーザープロファイル
      * @param passwordHasher パスワードハッシュ化処理クラス
      * @return 登録ユーザ
      */
@@ -91,7 +98,7 @@ public class User extends AggregateRoot {
         UUID id = UUID.randomUUID();
 
         // 登録ユーザ作成
-        User user = new User(id, identity, passwordHasher.hash(rawPassword), profile, UserStatus.newlyCreated());
+        User user = new User(id, identity, passwordHasher.hash(rawPassword), profile, UserStatus.newlyCreated(), 0);
 
         // イベント登録：ユーザーが登録された
         user.registerEvent(UserRegistered.of(id));
@@ -103,11 +110,11 @@ public class User extends AggregateRoot {
     /**
      * パスワードを変更する
      *
-     * @param oldPassword 古いパスワード
-     * @param newPassword 新しいパスワード
+     * @param oldPassword    古いパスワード
+     * @param newPassword    新しいパスワード
      * @param passwordHasher パスワードハッシュ化処理クラス
      */
-    public void changePassword(@NonNull RawPassword oldPassword, @NonNull RawPassword newPassword,@NonNull PasswordHasher passwordHasher) {
+    public void changePassword(@NonNull RawPassword oldPassword, @NonNull RawPassword newPassword, @NonNull PasswordHasher passwordHasher) {
         // ユーザーは既に無効化されている場合、エラーとする
         throwIfDisabled();
 
@@ -177,10 +184,11 @@ public class User extends AggregateRoot {
      * @param password パスワード
      * @param profile  ユーザープロファイル
      * @param status   ユーザーステータス
+     * @param version  バージョン
      */
     @Builder
     public record Snapshot(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile,
-                           UserStatus status) {
+                           UserStatus status, long version) {
     }
 
     /**
@@ -195,6 +203,7 @@ public class User extends AggregateRoot {
                 .password(password)
                 .profile(profile)
                 .status(status)
+                .version(version)
                 .build();
     }
 
@@ -208,15 +217,18 @@ public class User extends AggregateRoot {
                 snapshot.identity(),
                 snapshot.password(),
                 snapshot.profile(),
-                snapshot.status());
+                snapshot.status(),
+                snapshot.version());
     }
 
 // ============================== プライベートメソッド ==============================
 
     /**
      * 無効化されている場合に例外をスローする
+     *
+     * @throws BusinessException 無効化されている場合
      */
-    private void throwIfDisabled() throws BusinessException {
+    private void throwIfDisabled() {
         if (!status.enabled()) {
             throw BusinessException.of("User is already disabled", UserErrorCode.USER_ALREADY_DISABLED, id);
         }

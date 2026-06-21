@@ -12,6 +12,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * エラー処理用のユーティリティ
+ */
 @UtilityClass
 public class ErrorUtils {
 

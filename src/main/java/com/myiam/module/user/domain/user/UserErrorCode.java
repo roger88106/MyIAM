@@ -46,10 +46,6 @@ public enum UserErrorCode implements ErrorCode.Enum {
      */
     USER_NOT_FOUND(List.of(), ErrorType.NOT_FOUND_ERROR),
     /**
-     * ユーザーの復元に失敗した
-     */
-    USER_RESTORE_ERROR(List.of(), ErrorType.RESTORE_ERROR),
-    /**
      * パスワードがエンコードされていない
      */
     PASSWORD_NOT_ENCODED(List.of(), ErrorType.SYSTEM_ERROR),

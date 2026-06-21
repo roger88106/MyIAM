@@ -3,12 +3,18 @@ package com.myiam.common.error;
 import com.myiam.common.utility.error.ErrorUtils;
 import lombok.NonNull;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * システム上予期せぬエラー。 ※HTTP 500系
  */
 public class SystemException extends BaseException {
+
+    /**
+     * システムエラー
+     */
+    private static final ErrorCode SYSTEM_ERROR = new ErrorCode("SYSTEM_ERROR", List.of(), ErrorType.SYSTEM_ERROR);
 
     /**
      * {@code SystemException}の新しいインスタンスを作成して返します。
@@ -39,7 +45,17 @@ public class SystemException extends BaseException {
      * @return 指定されたパラメータで初期化された新しい{@code SystemException}インスタンス
      */
     public static SystemException of(String debugMessage, Throwable cause) {
-        return new SystemException(debugMessage, cause, ErrorCode.SYSTEM_ERROR, Map.of());
+        return new SystemException(debugMessage, cause, SYSTEM_ERROR, Map.of());
+    }
+
+    /**
+     * {@code SystemException}の新しいインスタンスを作成して返します。
+     *
+     * @param cause        原因となった例外
+     * @return 指定されたパラメータで初期化された新しい{@code SystemException}インスタンス
+     */
+    public static SystemException of(Throwable cause) {
+        return new SystemException(cause.getMessage() ,cause, SYSTEM_ERROR, Map.of());
     }
 
     /**

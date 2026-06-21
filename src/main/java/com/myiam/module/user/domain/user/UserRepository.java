@@ -28,6 +28,13 @@ public interface UserRepository {
     Optional<User> findById(UUID id);
 
     /**
+     * ユーザー登録
+     *
+     * @param user ユーザー ドメインモデル
+     */
+    void add(User user);
+
+    /**
      * ユーザー保存
      *
      * @param user ユーザー ドメインモデル
