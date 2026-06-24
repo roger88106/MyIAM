@@ -1,5 +1,5 @@
 /**
  * ユーザーイベント。
  */
-@org.springframework.modulith.NamedInterface("events")
+@org.springframework.modulith.NamedInterface("UserEvent")
 package com.myiam.module.user.event;
