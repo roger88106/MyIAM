@@ -1,7 +1,6 @@
 package com.myiam.module.auth.core.config;
 
-import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
+import com.myiam.config.security.SecurityOrder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -11,8 +10,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -22,17 +19,16 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
-class SecurityConfig {
+class AuthSecurityConfig {
 
     /**
-     * 認可処理フィルターチェーン
+     * 認可　フィルターチェーン
      *
      * @param http HTTP セキュリティ設定
      * @return 認可サーバー用のフィルタチェーン
      */
     @Bean
-    @Order(1)
+    @Order(SecurityOrder.AUTHORIZATION)
     public SecurityFilterChain authorizationServerSecurityFilterChain(
             HttpSecurity http
     ) {
@@ -60,22 +56,22 @@ class SecurityConfig {
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
-                // デフォルトのJwtCustomizerを設定
+                // デフォルトの JwtCustomizerを設定
                 .oauth2ResourceServer((rs) -> rs.jwt(Customizer.withDefaults()));
 
         return http.build();
     }
 
     /**
-     * デフォルトフィルターチェーン
+     * 認証　フィルターチェン
      *
      * @param http HTTP セキュリティ設定
      * @param authenticationProvider 認証プロバイダー
-     * @return デフォルトのフィルタチェーン
+     * @return 認証処理フィルターチェン
      */
     @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(
+    @Order(SecurityOrder.AUTHENTICATION)
+    public SecurityFilterChain authenticationSecurityFilterChain(
             HttpSecurity http,
             AuthenticationProvider authenticationProvider
     ) {
@@ -99,40 +95,4 @@ class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * パスワードエンコーダーの設定。
-     *
-     * @return パスワードエンコーダー
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        // 暗号化アルゴリズムのアップグレードを防ぐため、NonUpgradingPasswordEncoderを使用
-        return new NonUpgradingPasswordEncoder(
-                // DelegatingPasswordEncoder を使用し、複数の暗号化アルゴリズムをサポート
-                PasswordEncoderFactories.createDelegatingPasswordEncoder());
-    }
-
-    /**
-     * 暗号化アルゴリズムのアップグレードをロックするためのPasswordEncoderラッピング
-     */
-    private record NonUpgradingPasswordEncoder(PasswordEncoder encoder) implements PasswordEncoder {
-
-        /** アップグレードを防ぐため、upgradeEncodingを上書きする */
-        @Override
-        public boolean upgradeEncoding(@Nullable String encodedPassword) {
-            return false;
-        }
-
-        /** encodeをそのまま使用 */
-        @Override
-        public @Nullable String encode(@Nullable CharSequence rawPassword) {
-            return encoder.encode(rawPassword);
-        }
-
-        /** DelegatingPasswordEncoder.matchesをそのまま使用 */
-        @Override
-        public boolean matches(@Nullable CharSequence rawPassword, @Nullable String encodedPassword) {
-            return encoder.matches(rawPassword, encodedPassword);
-        }
-    }
 }
