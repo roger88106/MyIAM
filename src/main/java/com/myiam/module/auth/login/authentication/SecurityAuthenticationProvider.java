@@ -1,4 +1,4 @@
-package com.myiam.module.auth.authentication;
+package com.myiam.module.auth.login.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;

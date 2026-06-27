@@ -1,4 +1,4 @@
-package com.myiam.module.auth.authorization.client;
+package com.myiam.module.auth.server.client;
 
 import com.myiam.jooq.auth.tables.records.Oauth2RegisteredClientRecord;
 import lombok.RequiredArgsConstructor;

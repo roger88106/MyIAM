@@ -1,4 +1,4 @@
-package com.myiam.module.auth.authorization.consent;
+package com.myiam.module.auth.server.consent;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;

@@ -1,4 +1,4 @@
-package com.myiam.module.auth.authorization.client;
+package com.myiam.module.auth.server.client;
 
 import org.jooq.DSLContext;
 import org.springframework.cache.Cache;

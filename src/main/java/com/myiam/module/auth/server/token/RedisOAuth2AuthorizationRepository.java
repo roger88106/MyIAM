@@ -1,4 +1,4 @@
-package com.myiam.module.auth.authorization.token;
+package com.myiam.module.auth.server.token;
 
 import com.google.common.hash.Hashing;
 import lombok.NonNull;
