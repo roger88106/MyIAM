@@ -1,4 +1,4 @@
-package com.myiam.module.auth.core.controller;
+package com.myiam.config.web;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * アプリケーション内で発生したエラー（HTTPエラーやOAuth2関連の例外）をハンドリングし、エラー画面を表示する。
  */
 @Controller
-public class ErrorController implements org.springframework.boot.webmvc.error.ErrorController {
+class ErrorController implements org.springframework.boot.webmvc.error.ErrorController {
     /**
      * エラーハンドリング処理。<br />
      * HTTPステータスコードやエラーメッセージを抽出し、エラー画面に渡すモデルを構築する。
@@ -41,5 +41,14 @@ public class ErrorController implements org.springframework.boot.webmvc.error.Er
 
         // エラー画面のテンプレート（errorPage.html）を返す
         return "errorPage";
+    }
+
+    /**
+     * エラー情報。
+     *
+     * @param errorCode エラーコード
+     * @param description エラー説明
+     */
+    record ErrorInfo(String errorCode, String description) {
     }
 }

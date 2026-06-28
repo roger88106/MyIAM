@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-class SecurityOAuth2AuthorizationConsentService implements OAuth2AuthorizationConsentService {
+class OAuth2AuthorizationConsentServiceImpl implements OAuth2AuthorizationConsentService {
 
     /** 認可同意情報リポジトリ */
     private final OAuth2AuthorizationConsentRepository repository;

@@ -9,8 +9,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 
 import java.util.Objects;
 
-import static com.myiam.module.auth.core.constant.CacheNameConst.REGISTERED_CLIENT;
-import static com.myiam.module.auth.core.constant.CacheNameConst.REGISTERED_CLIENT_ID_MAP;
+import static com.myiam.module.auth.shared.constant.CacheNameConst.REGISTERED_CLIENT;
+import static com.myiam.module.auth.shared.constant.CacheNameConst.REGISTERED_CLIENT_ID_MAP;
 
 /**
  * クライアント管理の内部構成クラス。

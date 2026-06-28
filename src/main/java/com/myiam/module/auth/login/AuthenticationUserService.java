@@ -1,4 +1,4 @@
-package com.myiam.module.auth.login.authentication;
+package com.myiam.module.auth.login;
 
 import lombok.NonNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

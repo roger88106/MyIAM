@@ -1,4 +1,4 @@
-package com.myiam.module.auth.core.config;
+package com.myiam.module.auth.config;
 
 import com.myiam.config.security.SecurityOrder;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package com.myiam.module.auth.server.token;
 
-import com.myiam.module.auth.login.authentication.AuthenticationDto;
+import com.myiam.module.auth.login.AuthenticationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.jackson.SecurityJacksonModules;

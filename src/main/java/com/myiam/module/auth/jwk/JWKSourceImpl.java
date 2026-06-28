@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Component
 @RequiredArgsConstructor
-class CachingJWKSource implements JWKSource<SecurityContext> {
+class JWKSourceImpl implements JWKSource<SecurityContext> {
 
     /** JWK 管理サービス */
     private final JwkManagerService jwkManagerService;

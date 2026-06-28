@@ -1,7 +1,7 @@
-package com.myiam.module.auth.core.config;
+package com.myiam.module.auth.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.myiam.module.auth.core.constant.CacheNameConst;
+import com.myiam.module.auth.shared.constant.CacheNameConst;
 import lombok.Getter;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,4 +1,4 @@
-package com.myiam.module.auth.core.constant;
+package com.myiam.module.auth.shared.constant;
 
 import java.util.Set;
 

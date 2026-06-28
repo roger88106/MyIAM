@@ -1,4 +1,4 @@
-package com.myiam.module.auth.login.authentication;
+package com.myiam.module.auth.login;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 @Component
 @RequiredArgsConstructor
-class SecurityAuthenticationProvider implements AuthenticationProvider {
+class AuthenticationProviderImpl implements AuthenticationProvider {
 
     /** ユーザークエリサービス */
     private final AuthenticationUserService authenticationUserService;

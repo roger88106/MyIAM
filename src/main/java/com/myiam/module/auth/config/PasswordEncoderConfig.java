@@ -1,4 +1,4 @@
-package com.myiam.module.auth.core.config;
+package com.myiam.module.auth.config;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;

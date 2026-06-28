@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-class SecurityOAuth2AuthorizationService implements OAuth2AuthorizationService {
+class OAuth2AuthorizationServiceImpl implements OAuth2AuthorizationService {
 
     /** 認可情報リポジトリ */
     private final RedisOAuth2AuthorizationRepository repository;

@@ -1,4 +1,4 @@
-package com.myiam.module.auth.login.authentication;
+package com.myiam.module.auth.login;
 
 import lombok.Builder;
 import lombok.NonNull;

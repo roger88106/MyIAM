@@ -2,7 +2,7 @@ package com.myiam.module.auth.jwk;
 
 import com.myiam.common.error.SystemException;
 import com.myiam.jooq.auth.tables.records.Oauth2JwksRecord;
-import com.myiam.module.auth.core.constant.CacheNameConst;
+import com.myiam.module.auth.shared.constant.CacheNameConst;
 import com.nimbusds.jose.jwk.RSAKey;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

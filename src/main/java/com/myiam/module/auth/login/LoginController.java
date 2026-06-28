@@ -1,4 +1,4 @@
-package com.myiam.module.auth.core.controller;
+package com.myiam.module.auth.login;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +15,7 @@ import java.net.URI;
  * ユーザー認証のためのログインページへの遷移を制御する。
  */
 @Controller
-public class LoginController {
+class LoginController {
 
     private final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
 
