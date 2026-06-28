@@ -1,4 +1,4 @@
-package com.myiam.module.auth.server.token;
+package com.myiam.module.auth.server.authorization;
 
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;

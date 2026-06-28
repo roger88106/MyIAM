@@ -1,4 +1,4 @@
-package com.myiam.module.auth.server.claims;
+package com.myiam.module.auth.server.token;
 
 import com.myiam.module.auth.login.AuthenticationDto;
 import org.springframework.security.core.Authentication;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * トークンの発行時に、適切な識別子を設定する。
  */
 @Component
-public class OAuth2TokenCustomizerImpl implements OAuth2TokenCustomizer<JwtEncodingContext> {
+class OAuth2TokenCustomizerImpl implements OAuth2TokenCustomizer<JwtEncodingContext> {
 
     /**
      * トークンカスタマイズ

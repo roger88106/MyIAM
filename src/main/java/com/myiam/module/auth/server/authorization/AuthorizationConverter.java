@@ -1,4 +1,4 @@
-package com.myiam.module.auth.server.token;
+package com.myiam.module.auth.server.authorization;
 
 import com.myiam.module.auth.login.AuthenticationDto;
 import lombok.RequiredArgsConstructor;
