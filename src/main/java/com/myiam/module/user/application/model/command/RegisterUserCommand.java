@@ -5,13 +5,12 @@ import lombok.Builder;
 /**
  * ユーザー登録コマンド
  *
- * @param username ユーザー名
  * @param email メールアドレス
  * @param password パスワード
  * @param profile プロフィール
  */
 @Builder
-public record RegisterUserCommand(String username, String email, String password, Profile profile) {
+public record RegisterUserCommand(String email, String password, Profile profile) {
 
     /**
      * プロフィール

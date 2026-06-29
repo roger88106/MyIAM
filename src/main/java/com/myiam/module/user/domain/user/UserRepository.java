@@ -14,10 +14,10 @@ public interface UserRepository {
     /**
      * ユーザー存在チェック
      *
-     * @param identity ユーザーの識別情報
+     * @param email ユーザーのメールアドレス
      * @return 存在する場合 {@code true}, 存在しない場合 {@code false}
      */
-    boolean existsByIdentity(UserIdentity identity);
+    boolean existsByIdentifier(Email email);
 
     /**
      * ユーザー取得

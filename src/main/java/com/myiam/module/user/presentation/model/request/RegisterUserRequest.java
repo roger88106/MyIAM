@@ -5,13 +5,11 @@ import jakarta.validation.constraints.Email;
 /**
  * ユーザー登録リクエスト
  *
- * @param username ユーザー名
  * @param email    メールアドレス
  * @param password パスワード
  * @param profile  プロファイル
  */
 public record RegisterUserRequest(
-        String username,
         @Email
         String email,
         String password,

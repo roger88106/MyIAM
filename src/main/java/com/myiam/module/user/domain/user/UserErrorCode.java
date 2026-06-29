@@ -25,9 +25,9 @@ public enum UserErrorCode implements ErrorCode.Enum {
      */
     INVALID_PASSWORD_FORMAT(List.of(), ErrorType.VALIDATION_ERROR),
     /**
-     * 識別情報が正しくない
+     * メールアドレスが正しくない
      */
-    INVALID_IDENTITY(List.of(), ErrorType.VALIDATION_ERROR),
+    INVALID_EMAIL(List.of(), ErrorType.VALIDATION_ERROR),
     /**
      * ユーザーが既に無効化されている<br />
      * ID: {userId}

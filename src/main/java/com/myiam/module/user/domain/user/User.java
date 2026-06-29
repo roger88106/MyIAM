@@ -27,9 +27,9 @@ public class User extends AggregateRoot {
     private final UUID id;
 
     /**
-     * ユーザーの識別情報
+     * ユーザーのメールアドレス
      */
-    private UserIdentity identity;
+    private Email email;
 
     /**
      * パスワード
@@ -57,15 +57,15 @@ public class User extends AggregateRoot {
      * ユーザーの全属性コンストラクタ
      *
      * @param id       ユーザー ID
-     * @param identity ユーザーの識別情報
+     * @param email    ユーザーのメールアドレス
      * @param password パスワード
      * @param profile  ユーザープロファイル
      * @param status   ユーザーステータス
      * @param version  バージョン
      */
-    private User(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile, UserStatus status, long version) {
+    private User(UUID id, Email email, HashedPassword password, UserProfile profile, UserStatus status, long version) {
         this.id = Objects.requireNonNull(id, "id must not be null");
-        this.identity = Objects.requireNonNull(identity, "identity must not be null");
+        this.email = Objects.requireNonNull(email, "email must not be null");
         this.password = Objects.requireNonNull(password, "password must not be null");
         this.profile = Objects.requireNonNull(profile, "profile must not be null");
         this.status = Objects.requireNonNull(status, "status must not be null");
@@ -86,19 +86,19 @@ public class User extends AggregateRoot {
     /**
      * 登録ユーザを作成する
      *
-     * @param identity       ユーザーの識別情報
+     * @param email          ユーザーのメールアドレス
      * @param rawPassword    パスワード
      * @param profile        ユーザープロファイル
      * @param passwordHasher パスワードハッシュ化処理クラス
      * @return 登録ユーザ
      */
-    public static User register(@NonNull UserIdentity identity, @NonNull RawPassword rawPassword, @NonNull UserProfile profile, @NonNull PasswordHasher passwordHasher) {
+    public static User register(@NonNull Email email, @NonNull RawPassword rawPassword, @NonNull UserProfile profile, @NonNull PasswordHasher passwordHasher) {
 
         // 新規ユーザーID取得
         UUID id = UUID.randomUUID();
 
         // 登録ユーザ作成
-        User user = new User(id, identity, passwordHasher.hash(rawPassword), profile, UserStatus.newlyCreated(), 0);
+        User user = new User(id, email, passwordHasher.hash(rawPassword), profile, UserStatus.newlyCreated(), 0);
 
         // イベント登録：ユーザーが登録された
         user.registerEvent(UserRegistered.of(id));
@@ -180,14 +180,14 @@ public class User extends AggregateRoot {
      * ユーザースナップショット
      *
      * @param id       ユーザー ID
-     * @param identity ユーザーの識別情報
+     * @param email    ユーザーのメールアドレス
      * @param password パスワード
      * @param profile  ユーザープロファイル
      * @param status   ユーザーステータス
      * @param version  バージョン
      */
     @Builder
-    public record Snapshot(UUID id, UserIdentity identity, HashedPassword password, UserProfile profile,
+    public record Snapshot(UUID id, Email email, HashedPassword password, UserProfile profile,
                            UserStatus status, long version) {
     }
 
@@ -199,7 +199,7 @@ public class User extends AggregateRoot {
     public Snapshot toSnapshot() {
         return Snapshot.builder()
                 .id(id)
-                .identity(identity)
+                .email(email)
                 .password(password)
                 .profile(profile)
                 .status(status)
@@ -214,7 +214,7 @@ public class User extends AggregateRoot {
      */
     User(Snapshot snapshot) {
         this(snapshot.id(),
-                snapshot.identity(),
+                snapshot.email(),
                 snapshot.password(),
                 snapshot.profile(),
                 snapshot.status(),

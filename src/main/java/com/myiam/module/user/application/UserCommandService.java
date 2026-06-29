@@ -38,18 +38,17 @@ public class UserCommandService {
     @Transactional
     public UUID registerUser(RegisterUserCommand command) {
         // VO作成
-        var identity = new UserIdentity(command.username(), command.email());
+        var email = new Email(command.email());
         var rawPassword = new RawPassword(command.password());
         var profile = new UserProfile(command.profile().familyName(), command.profile().givenName());
 
         // ユーザーが既に存在する場合はエラーとする
-        if (userRepository.existsByIdentity(identity)) {
-            String identityValue = identity.username() != null ? identity.username() : identity.email();
-            throw BusinessException.of("user is already exists: %s".formatted(identityValue), UserErrorCode.USER_ALREADY_EXISTS, identityValue);
+        if (userRepository.existsByIdentifier(email)) {
+            throw BusinessException.of("user is already exists: %s".formatted(email.value()), UserErrorCode.USER_ALREADY_EXISTS, email.value());
         }
 
         // 登録ユーザ作成
-        User user = User.register(identity, rawPassword, profile, passwordHasher);
+        User user = User.register(email, rawPassword, profile, passwordHasher);
 
         // ユーザー登録
         userRepository.add(user);

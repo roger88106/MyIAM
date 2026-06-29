@@ -43,22 +43,21 @@ public class JooqUserRepository implements UserRepository {
     /**
      * ユーザーの識別情報からユーザーが存在するかどうかを判定する。
      *
-     * @param identity ユーザーの識別情報
+     * @param email ユーザーのメールアドレス
      * @return 存在する場合 {@code true}, 存在しない場合 {@code false}
      */
     @Override
-    public boolean existsByIdentity(UserIdentity identity) {
+    public boolean existsByIdentifier(Email email) {
         return dsl.fetchExists(
                 selectFrom(USERS)
-                        .where(USERS.USERNAME.eq(identity.username()))
-                        .or(USERS.EMAIL.eq(identity.email()))
+                        .where(USERS.EMAIL.eq(email.value()))
         );
     }
 
     /**
      * ユーザー ID からユーザーを取得する。
      *
-     * @param id ユーザーの識別情報
+     * @param id ユーザー ID
      * @return ユーザー
      */
     @Override
@@ -179,8 +178,8 @@ public class JooqUserRepository implements UserRepository {
         return new User.Snapshot(
                 // ID
                 users.getId(),
-                // 識別情報
-                new UserIdentity(users.getUsername(), users.getEmail()),
+                // メールアドレス
+                new Email(users.getEmail()),
                 // パスワード情報
                 new HashedPassword(users.getPassword()),
                 // プロファイル情報
@@ -202,9 +201,9 @@ public class JooqUserRepository implements UserRepository {
                 // ID
                 .setId(user.id())
                 // ユーザー名
-                .setUsername(user.identity().username())
+                .setUsername(user.email().value())
                 // メールアドレス
-                .setEmail(user.identity().email())
+                .setEmail(user.email().value())
                 // パスワード
                 .setPassword(user.password().value())
                 // 有効フラグ
