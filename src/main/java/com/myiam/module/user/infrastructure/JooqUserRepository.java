@@ -23,7 +23,7 @@ import static org.jooq.impl.DSL.selectFrom;
  */
 @Repository
 @RequiredArgsConstructor
-public class JooqUserRepository implements UserRepository {
+class JooqUserRepository implements UserRepository {
 
     /**
      * jOOQ DSL Context

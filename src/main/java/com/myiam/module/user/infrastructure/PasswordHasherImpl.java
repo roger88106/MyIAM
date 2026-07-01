@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class PasswordHasherImpl implements PasswordHasher {
+class PasswordHasherImpl implements PasswordHasher {
 
     /**
      * パスワードエンコーダ

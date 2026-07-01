@@ -16,7 +16,7 @@ import java.util.UUID;
  * ユーザーマッパー
  */
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+interface UserMapper {
 
     /**
      * {@code RegisterUserRequest} を {@code RegisterUserCommand} に変換する
