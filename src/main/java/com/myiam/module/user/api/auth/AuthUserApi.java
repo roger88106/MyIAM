@@ -32,27 +32,27 @@ public class AuthUserApi {
      * @param email メールアドレス
      * @return 認証情報
      */
-    public Optional<AuthUserApiResponse.Credential> getCredential(String email) {
+    public Optional<AuthUserApiResponse.Credential> findCredential(String email) {
         var query = UserCredentialQuery.builder()
                 .email(email)
                 .build();
 
-        return userQueryService.getUserCredential(query)
+        return userQueryService.findUserCredential(query)
                 .map(authUserMapper::toCredential);
     }
 
     /**
-     * ユーザーの認証情報取得
+     * ユーザークレーム取得
      *
      * @param userId ユーザー ID
-     * @return 認証情報
+     * @return ユーザークレーム
      */
-    public Optional<AuthUserApiResponse.UserClaims> getUserClaims(UUID userId) {
+    public Optional<AuthUserApiResponse.UserClaims> findUserClaims(UUID userId) {
         var query = UserClaimsQuery.builder()
                 .userId(userId)
                 .build();
 
-        return userQueryService.getUserClaims(query)
+        return userQueryService.findUserClaims(query)
                 .map(authUserMapper::toUserClaims);
     }
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public class AuthUserApiResponse {
 
     /**
-     * 認証情報
+     * ユーザー認証情報
      *
      * @param userId            ユーザー ID
      * @param password          パスワード
@@ -22,7 +22,7 @@ public class AuthUserApiResponse {
     }
 
     /**
-     * ユーザー識別情報
+     * ユーザークレーム
      *
      * @param userId     ユーザー ID
      * @param email      メールアドレス

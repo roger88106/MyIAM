@@ -29,7 +29,7 @@ public class UserQueryService {
      * @param query ユーザー認証情報クエリ
      * @return ユーザー認証情報
      */
-    public Optional<UserCredential> getUserCredential(UserCredentialQuery query) {
+    public Optional<UserCredential> findUserCredential(UserCredentialQuery query) {
         return userQueryRepository.findUserCredential(query);
     }
 
@@ -39,7 +39,7 @@ public class UserQueryService {
      * @param query ユーザークレームクエリ
      * @return ユーザークレーム
      */
-    public Optional<UserClaims> getUserClaims(UserClaimsQuery query) {
+    public Optional<UserClaims> findUserClaims(UserClaimsQuery query) {
         return userQueryRepository.findUserClaims(query);
     }
 
