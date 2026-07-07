@@ -1,5 +1,8 @@
-package com.myiam.module.auth.login;
+package com.myiam.module.auth.login.internal;
 
+import com.myiam.module.auth.login.UserPrincipal;
+import com.myiam.module.auth.userdir.UserCredential;
+import com.myiam.module.auth.userdir.UserDirectory;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -24,8 +28,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 class AuthenticationProviderImpl implements AuthenticationProvider {
 
-    /** ユーザークエリサービス */
-    private final AuthenticationUserService authenticationUserService;
+    /**
+     * ユーザーディレクトリ。
+     */
+    private final UserDirectory userDirectory;
 
     /** パスワードエンコーダー */
     private final PasswordEncoder encoder;
@@ -54,7 +60,7 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
     public @Nullable Authentication authenticate(@NonNull Authentication authentication) throws AuthenticationException {
 
         // 認証用ユーザー取得
-        var user = getAuthUser(authentication);
+        var user = getAuthenticatedUser(authentication);
 
         // 認証処理実行
         FactorGrantedAuthority factor = verifyCredentials(authentication, user);
@@ -64,35 +70,29 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
     }
 
     /**
-     * 認証用ユーザー取得
+     * 認証ユーザー取得
      *
      * @param authentication 認証情報
      * @return 有効な認証用ユーザー
      * @throws AuthenticationException 認証エラーが発生した場合
      */
-    private AuthenticationDto.@NonNull AuthUserView getAuthUser(Authentication authentication) throws AuthenticationException {
-        // ユーザー識別子をキーに該当するユーザー詳細情報を照会
-        AuthenticationDto.AuthUserView user = authenticationUserService.findUserById(authentication.getName());
+    private AuthenticatedUser getAuthenticatedUser(Authentication authentication) throws AuthenticationException {
+        // ユーザーのログイン情報を取得する
+        UserCredential userCredential = userDirectory.findCredential(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("ユーザーが見つかりません。"));
 
-        // 取得したユーザーアカウントの有効性およびロック・有効期限状態の検証
-        if (user == null) {
-            throw new UsernameNotFoundException("ユーザーが見つかりません。");
-        }
-        if (!user.enabled()) {
+        // 取得したユーザーアカウントの有効性検証
+        if (!userCredential.enabled()) {
             throw new DisabledException("アカウントが無効です。");
+        } else if (userCredential.passwordLocked()) {
+            throw new LockedException("パスワードがロックされています。");
         }
-        if (!user.accountNonLocked()) {
-            throw new LockedException("アカウントがロックされています。");
-        }
-        if (!user.accountNonExpired()) {
-            throw new AccountExpiredException("アカウントの有効期限が切れています。");
-        }
-        if (!user.credentialsNonExpired()) {
-            throw new CredentialsExpiredException("資格情報の有効期限が切れています。");
-        }
+
+        // 権限リスト設定
+        Collection<GrantedAuthority> authorities = Set.of(); // ToDo: 権限系は再検討要
 
         //  有効なユーザーを返却
-        return user;
+        return AuthenticatedUser.of(userCredential.userId(), userCredential.password(), authorities);
     }
 
     /**
@@ -102,10 +102,10 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
      * @param user 認証用ユーザー
      * @return ファクター付与権限
      */
-    private @NonNull FactorGrantedAuthority verifyCredentials(@NonNull Authentication authentication, AuthenticationDto.AuthUserView user) {
+    private @NonNull FactorGrantedAuthority verifyCredentials(@NonNull Authentication authentication, AuthenticatedUser user) {
         // パスワードエンコーダーを使用した暗号化パスワードの照合
         String rawPassword = Objects.requireNonNull(authentication.getCredentials()).toString();
-        if (!encoder.matches(rawPassword, user.password())) {
+        if (!encoder.matches(rawPassword, user.getPasswordValue())) {
             throw new BadCredentialsException("アカウントまたはパスワードが正しくありません。");
         }
 
@@ -123,20 +123,17 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
      * @param factor ファクター付与権限
      * @return 認証トークン
      */
-    private static @NonNull UsernamePasswordAuthenticationToken getAuthenticatedToken(AuthenticationDto.AuthUserView user, FactorGrantedAuthority factor) {
+    private static @NonNull UsernamePasswordAuthenticationToken getAuthenticatedToken(AuthenticatedUser user, FactorGrantedAuthority factor) {
         // 権限リストにファクター付与権限を追加
         Set<GrantedAuthority> authorities = new HashSet<>(user.authorities());
         authorities.add(factor);
 
         // ユーザ情報作成
-        var userView = AuthenticationDto.UserView.builder()
-                .id(user.id())
-                .username(user.username())
-                .build();
+        var principal = UserPrincipal.of(user.id());
 
         // 認証に成功したユーザー情報および付与された全権限を保持する認証トークンの生成
         return new UsernamePasswordAuthenticationToken(
-                userView,
+                principal,
                 null,
                 authorities
         );

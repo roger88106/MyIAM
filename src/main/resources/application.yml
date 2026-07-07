@@ -31,6 +31,8 @@ jwt:
     ttl: P35D
 
 app:
+  security:
+    login-path: /login
   cache:
     specs:
       jwk: "expireAfterWrite=1h,maximumSize=50"

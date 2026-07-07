@@ -1,6 +1,7 @@
 package com.myiam.module.auth.config;
 
 import com.myiam.config.security.SecurityOrder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -20,6 +21,12 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 @Configuration
 @EnableWebSecurity
 class AuthSecurityConfig {
+
+    /**
+     * ログインページのパス
+     */
+    @Value("${app.security.login-path}")
+    private String loginPath;
 
     /**
      * 認可　フィルターチェーン
@@ -54,7 +61,7 @@ class AuthSecurityConfig {
                 .exceptionHandling((exceptions) -> exceptions
                         // 未認証時にHTMLリクエスト（ブラウザ等）の場合はログイン画面にリダイレクトする
                         .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
+                                new LoginUrlAuthenticationEntryPoint(loginPath),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
                 // デフォルトの JwtCustomizerを設定
                 .oauth2ResourceServer((rs) -> rs.jwt(Customizer.withDefaults()));
@@ -82,13 +89,13 @@ class AuthSecurityConfig {
                 // リクエストごとの認可ルールの設定
                 .authorizeHttpRequests((authorize) -> authorize
                         // ログインページおよび静的リソース（CSS、JS）は認証不要でアクセス可能
-                        .requestMatchers("/login", "/error", "/css/**", "/js/**").permitAll()
+                        .requestMatchers(loginPath, "/error", "/css/**", "/js/**").permitAll()
                         // その他すべてのリクエストは認証を必須とする
                         .anyRequest().authenticated())
                 // フォームログインの設定
                 .formLogin(form -> form
                         // カスタムログインページのパスを指定
-                        .loginPage("/login")
+                        .loginPage(loginPath)
                         // ログインページへのアクセスを全ユーザーに許可
                         .permitAll());
 

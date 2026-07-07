@@ -1,6 +1,5 @@
 package com.myiam.module.auth.server.token;
 
-import com.myiam.module.auth.login.AuthenticationDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -55,11 +54,12 @@ class OAuth2TokenCustomizerImpl implements OAuth2TokenCustomizer<JwtEncodingCont
         // JWT の "sub" (Subject) クレームにprincipalの名前を設定
         context.getClaims().subject(principal.getName());
 
-        // principalがカスタムのユーザの場合
-        if (principal.getPrincipal() instanceof AuthenticationDto.UserView user) {
-            // カスタムクレーム：ユーザー名追加
-            context.getClaims().claim("user_name", user.username());
-        }
+        // ToDo: ユーザー情報取得方法修正要
+//        // principalがカスタムのユーザの場合
+//        if (principal.getPrincipal() instanceof AuthenticationDto.UserView user) {
+//            // カスタムクレーム：ユーザー名追加
+//            context.getClaims().claim("user_name", user.username());
+//        }
     }
 
     /**

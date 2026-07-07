@@ -1,6 +1,6 @@
 package com.myiam.module.auth.server.authorization;
 
-import com.myiam.module.auth.login.AuthenticationDto;
+import com.myiam.module.auth.login.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.security.jackson.SecurityJacksonModules;
@@ -254,7 +254,7 @@ class AuthorizationConverter {
                 .builder();
 
         // ホワイトリストに登録されたクラスをサブタイプとして許可
-        bpt.allowIfSubType(AuthenticationDto.UserView.class);
+        bpt.allowIfSubType(UserPrincipal.class);
 
         // セキュリティモジュールを含む JsonMapper を構築
         return JsonMapper.builder()

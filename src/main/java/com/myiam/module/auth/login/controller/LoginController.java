@@ -1,4 +1,4 @@
-package com.myiam.module.auth.login;
+package com.myiam.module.auth.login.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,7 +29,7 @@ class LoginController {
      * @param response HTTP レスポンス
      * @return ログイン画面のテンプレート名、または元のリクエスト先へのリダイレクト
      */
-    @GetMapping("/login")
+    @GetMapping("${app.security.login-path}")
     public String login(Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
 
         // 既に認証済みの場合、元のリクエスト先にリダイレクト
