@@ -4,6 +4,7 @@ import com.myiam.module.auth.userdir.UserClaims;
 import com.myiam.module.auth.userdir.UserCredential;
 import com.myiam.module.user.api.auth.AuthUserApiResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * ユーザーディレクトリマッパー
@@ -25,5 +26,6 @@ interface UserDirectoryMapper {
      * @param userClaims 変換する {@code UserClaims}
      * @return {@code UserClaims}
      */
+    @Mapping(target = "username", source = "email") // ToDo: ユーザー名分ける際に修正要
     UserClaims toUserClaims(AuthUserApiResponse.UserClaims userClaims);
 }

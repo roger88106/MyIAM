@@ -32,7 +32,7 @@ jwt:
 
 app:
   security:
-    login-path: /login
+    login-path: "/login"
   cache:
     specs:
       jwk: "expireAfterWrite=1h,maximumSize=50"
