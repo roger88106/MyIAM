@@ -2,120 +2,177 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>ログインポータル (Thymeleaf 骨格サンプル)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyIAM ログイン</title>
     <style>
+        :root {
+            --bg: #f4f6f9;
+            --card: #ffffff;
+            --border: #e2e6ea;
+            --text: #1f2933;
+            --muted: #6b7280;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --error-bg: #fdecee;
+            --error-border: #f5c2c7;
+            --error-text: #b02a37;
+            --success-bg: #e6f4ea;
+            --success-border: #b7dfc3;
+            --success-text: #1e7e46;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --card: #1e293b;
+                --border: #334155;
+                --text: #e2e8f0;
+                --muted: #94a3b8;
+                --primary: #3b82f6;
+                --primary-hover: #2563eb;
+                --error-bg: #3f1d22;
+                --error-border: #7f2933;
+                --error-text: #fca5a5;
+                --success-bg: #16301f;
+                --success-border: #2f5c3d;
+                --success-text: #86efac;
+            }
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: sans-serif;
-            background-color: #f4f6f9;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
-        .login-box {
-            background-color: #ffffff;
-            border: 1px solid #cccccc;
+
+        .login-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .login-card h1 {
+            font-size: 1.4rem;
+            margin: 0 0 4px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.875rem;
+            margin: 0 0 24px;
+        }
+
+        .alert {
+            padding: 12px 14px;
             border-radius: 8px;
-            padding: 30px;
-            width: 360px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 0.875rem;
+            margin-bottom: 20px;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .alert-error {
+            background: var(--error-bg);
+            border: 1px solid var(--error-border);
+            color: var(--error-text);
         }
-        .form-group label {
+
+        .alert-success {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--success-text);
+        }
+
+        .field { margin-bottom: 16px; }
+
+        .field label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--muted);
         }
-        .form-group input {
+
+        .field input {
             width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #cccccc;
-            border-radius: 4px;
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
         }
-        .btn-submit {
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
+            padding: 11px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            background: var(--primary);
             border: none;
-            border-radius: 4px;
-            font-weight: bold;
+            border-radius: 8px;
             cursor: pointer;
         }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-        .message-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-        .message-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
+
+        .btn:hover { background: var(--primary-hover); }
     </style>
 </head>
 <body>
+<div class="login-card">
+    <h1>MyIAM</h1>
+    <p class="subtitle">アカウントにログイン</p>
 
-<div class="login-box">
-    <h2>MyIAM ログイン</h2>
-
-    <!-- 
-        【Thymeleaf 機能展示 ①: th:if】
-        条件分岐: URLパラメータに "error" が含まれている場合（ログイン失敗時）にこのブロックを描画する
+    <!--
+        認証失敗メッセージ。
+        controller が session の認証例外を i18n キーに変換し、errorMessage として渡す。
+          messages.properties 整備後は th:text="#{${errorMessage}}" に差し替える。
     -->
-    <div th:if="${param.error}" class="message-error">
-        ログインに失敗しました。ユーザー名またはパスワードを確認してください。
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}">
+        ログインに失敗しました。
     </div>
 
-    <!-- 
-        【Thymeleaf 機能展示 ②: th:if】
-        条件分岐: URLパラメータに "logout" が含まれている場合（ログアウト成功時）にこのブロックを描画する
-    -->
-    <div th:if="${param.logout}" class="message-success">
-        ログアウトに成功しました。
+    <!-- ログアウト成功メッセージ -->
+    <div th:if="${param.logout}" class="alert alert-success">
+        ログアウトしました。
     </div>
 
-    <!-- 
-        【Thymeleaf 機能展示 ③: th:action】
-        パス生成: `@{~}` 構文を使用して、コンテキストパスに対応したポスト先 URL（/login）を自動生成する
+    <!--
+        Post-Redirect-Get の POST 先。ここへ POST すると controller ではなく
+        Spring Security の認証フィルターが処理する。
     -->
     <form th:action="@{/login}" method="post">
-        
-        <!-- 
-            【Thymeleaf 機能展示 ④: CSRF 対策】
-            Spring Security の CSRF 保護トークン。
-            Thymeleaf の th:action を使うと自動挿入される場合が多いですが、以下のように明示的に書くことで確実に統合されます。
-        -->
-        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-        <div class="form-group">
-            <label for="username">ユーザー名:</label>
-            <input type="text" id="username" name="username" required autofocus placeholder="username"
-                   th:value="${@environment.acceptsProfiles('dev') ? 'test' : ''}" />
+        <!-- CSRF トークン（未挿入だと POST が 403 になる） -->
+        <input type="hidden" th:if="${_csrf}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="field">
+            <!-- ログイン ID は email。ただし Spring 既定のパラメータ名 username を使用 -->
+            <label for="username">メールアドレス</label>
+            <input type="text" id="username" name="username" required autofocus autocomplete="username"/>
         </div>
 
-        <div class="form-group">
-            <label for="password">パスワード:</label>
-            <input type="password" id="password" name="password" required placeholder="password"
-                   th:value="${@environment.acceptsProfiles('dev') ? 'test' : ''}" />
+        <div class="field">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password"/>
         </div>
 
-        <button type="submit" class="btn-submit">ログイン</button>
+        <button type="submit" class="btn">ログイン</button>
     </form>
 </div>
-
 </body>
 </html>

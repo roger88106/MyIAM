@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
@@ -74,13 +75,15 @@ class AuthSecurityConfig {
      *
      * @param http HTTP セキュリティ設定
      * @param authenticationProvider 認証プロバイダー
+     * @param authenticationFailureHandler 認証失敗ハンドラー
      * @return 認証処理フィルターチェン
      */
     @Bean
     @Order(SecurityOrder.AUTHENTICATION)
     public SecurityFilterChain authenticationSecurityFilterChain(
             HttpSecurity http,
-            AuthenticationProvider authenticationProvider
+            AuthenticationProvider authenticationProvider,
+            AuthenticationFailureHandler authenticationFailureHandler
     ) {
 
         http
@@ -96,6 +99,8 @@ class AuthSecurityConfig {
                 .formLogin(form -> form
                         // カスタムログインページのパスを指定
                         .loginPage(loginPath)
+                        // 認証失敗時のハンドラー
+                        .failureHandler(authenticationFailureHandler)
                         // ログインページへのアクセスを全ユーザーに許可
                         .permitAll());
 

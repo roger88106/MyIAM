@@ -1,6 +1,6 @@
 HELP.md
 .gradle
-.tmp
+.local
 .ai
 build/
 !gradle/wrapper/gradle-wrapper.jar
