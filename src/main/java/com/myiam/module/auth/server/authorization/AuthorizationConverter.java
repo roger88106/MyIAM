@@ -118,6 +118,7 @@ class AuthorizationConverter {
         // 認可クライアント取得
         RegisteredClient registeredClient = registeredClientRepository.findById(po.registeredClientId());
         if (registeredClient == null) {
+            // ※JdbcOAuth2AuthorizationService参照して「DataRetrievalFailureException」をスローする
             throw new DataRetrievalFailureException(
                     "The RegisteredClient with id '%s' was not found."
                             .formatted(po.registeredClientId())
