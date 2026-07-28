@@ -1,51 +1,58 @@
 package com.myiam.common.error;
 
-import lombok.Getter;
-
-import java.util.List;
+import com.myiam.common.message.I18nMessage;
+import lombok.NonNull;
 
 /**
  * エラーコード
  *
- * @param code      コード
- * @param paramKeys エラーメッセージのパラメータキー
- * @param errorType エラータイプ
+ * @param code     エラーコード
+ * @param type     エラータイプ
+ * @param message  メッセージ
+ * @param exposure エラー情報の公開レベル
  */
-public record ErrorCode(String code, List<String> paramKeys, ErrorType errorType) {
+public record ErrorCode(@NonNull String code, @NonNull ErrorType type, @NonNull I18nMessage message,
+                        @NonNull ErrorExposure exposure) {
 
     /**
-     * エラーコード列挙型用のインターフェース
+     * エラー情報の公開レベル
      */
-    public interface Enum {
-        ErrorCode getErrorCode();
+    public enum ErrorExposure {
+        /**
+         * クライアントにそのまま公開可能。
+         */
+        EXPOSABLE,
+
+        /**
+         * 汎用エラーへ格下げする必要がある。
+         */
+        DOWNGRADE_REQUIRED,
+    }
+
+    // ============================== ファクトリー ==============================
+
+    /**
+     * エラーコードを作成するファクトリー
+     *
+     * @param code    エラーコード
+     * @param type    エラータイプ
+     * @param message メッセージ
+     * @return {@link ErrorCode}
+     */
+    public static ErrorCode of(String code, ErrorType type, I18nMessage message) {
+        return new ErrorCode(code, type, message, ErrorExposure.EXPOSABLE);
     }
 
     /**
-     * 共通のエラーコード
+     * エラーコードを作成するファクトリー
+     *
+     * @param code        エラーコード
+     * @param type        エラータイプ
+     * @param message     メッセージ
+     * @param displayCode 表示用エラーコード
+     * @return {@link ErrorCode}
      */
-    @Getter
-    public enum Common implements Enum {
-
-        /**
-         * 更新処理排他エラー
-         */
-        CONCURRENT_MODIFICATION (List.of(), ErrorType.CONFLICT_ERROR),
-        /**
-         * リポジトリ復元エラー
-         */
-        RESTORE_ERROR(List.of(), ErrorType.RESTORE_ERROR),
-        ;
-
-        /**
-         * エラーコード
-         */
-        private final ErrorCode errorCode;
-
-        /**
-         * コンストラクタ
-         */
-        Common(List<String> paramKeys, ErrorType errorType) {
-            this.errorCode = new ErrorCode(this.name(), paramKeys, errorType);
-        }
+    public static ErrorCode of(String code, ErrorType type, I18nMessage message, ErrorExposure exposure) {
+        return new ErrorCode(code, type, message, exposure);
     }
 }

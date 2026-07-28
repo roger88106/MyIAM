@@ -1,7 +1,7 @@
 package com.myiam.module.user.domain.user;
 
-import com.myiam.common.error.ErrorCode;
-import com.myiam.common.error.SystemException;
+import com.myiam.common.error.CommonErrorCode;
+import com.myiam.common.error.exception.SystemException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,7 +25,7 @@ public class UserFactory {
                     user restore error.
                     userSnapshot: %s
                     """.formatted(snapshot);
-            throw SystemException.of(debugMessage, e, ErrorCode.Common.RESTORE_ERROR);
+            throw SystemException.of(debugMessage, e, CommonErrorCode.RESTORE_ERROR.getCode());
         }
     }
 }

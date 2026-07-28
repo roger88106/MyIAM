@@ -1,7 +1,7 @@
 package com.myiam.module.user.infrastructure;
 
-import com.myiam.common.error.BusinessException;
-import com.myiam.common.error.ErrorCode;
+import com.myiam.common.error.CommonErrorCode;
+import com.myiam.common.error.exception.BusinessException;
 import com.myiam.jooq.user.tables.UserProfiles;
 import com.myiam.jooq.user.tables.records.UserProfilesRecord;
 import com.myiam.jooq.user.tables.records.UsersRecord;
@@ -152,7 +152,7 @@ class JooqUserRepository implements UserRepository {
 
         // 楽観排他された場合、エラーをスローする
         if (affected == 0) {
-            throw BusinessException.of("Failed to update user", ErrorCode.Common.CONCURRENT_MODIFICATION);
+            throw BusinessException.of(CommonErrorCode.CONCURRENT_MODIFICATION.getCode());
         }
 
         // プロファイル更新

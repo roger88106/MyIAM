@@ -1,6 +1,6 @@
 package com.myiam.module.auth.jwk;
 
-import com.myiam.common.error.SystemException;
+import com.myiam.common.error.exception.SystemException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import jakarta.annotation.PostConstruct;

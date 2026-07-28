@@ -1,6 +1,6 @@
 package com.myiam.module.user.domain.user;
 
-import com.myiam.common.error.BusinessException;
+import com.myiam.common.error.exception.BusinessException;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.regex.Pattern;
@@ -25,12 +25,12 @@ public record Email(String value) {
 
         // 必須チェック
         if (value == null) {
-            throw BusinessException.of("value can't be blank", UserErrorCode.INVALID_EMAIL);
+            throw BusinessException.of(UserErrorCode.INVALID_EMAIL.getCode());
         }
 
         // フォーマットチェック
         if (!validEmailFormat(value)) {
-            throw BusinessException.of("Email structure is invalid: " + value, UserErrorCode.INVALID_EMAIL_FORMAT);
+            throw BusinessException.of(UserErrorCode.INVALID_EMAIL_FORMAT.getCode());
         }
     }
 

@@ -1,6 +1,6 @@
 package com.myiam.module.auth.jwk;
 
-import com.myiam.common.error.SystemException;
+import com.myiam.common.error.exception.SystemException;
 import com.myiam.jooq.auth.tables.records.Oauth2JwksRecord;
 import com.myiam.module.auth.shared.constant.CacheNameConst;
 import com.nimbusds.jose.jwk.RSAKey;

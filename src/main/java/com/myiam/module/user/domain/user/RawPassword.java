@@ -1,6 +1,6 @@
 package com.myiam.module.user.domain.user;
 
-import com.myiam.common.error.BusinessException;
+import com.myiam.common.error.exception.BusinessException;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 /**
@@ -23,10 +23,10 @@ public record RawPassword(String value) {
      */
     public RawPassword {
         if (value == null || value.isBlank()) {
-            throw BusinessException.of("password can't be blank", UserErrorCode.INVALID_PASSWORD_FORMAT);
+            throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT.getCode());
         }
         if (!value.matches(PASSWORD_REGEX)) {
-            throw BusinessException.of("password must contain at least one letter and one number", UserErrorCode.INVALID_PASSWORD_FORMAT);
+            throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT.getCode());
         }
     }
 }

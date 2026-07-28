@@ -1,6 +1,6 @@
 package com.myiam.module.user.application;
 
-import com.myiam.common.error.BusinessException;
+import com.myiam.common.error.exception.BusinessException;
 import com.myiam.module.user.application.model.command.ChangePasswordCommand;
 import com.myiam.module.user.application.model.command.DisableUserCommand;
 import com.myiam.module.user.application.model.command.RegisterUserCommand;
@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -44,7 +45,7 @@ public class UserCommandService {
 
         // ユーザーが既に存在する場合はエラーとする
         if (userRepository.existsByIdentifier(email)) {
-            throw BusinessException.of("user is already exists: %s".formatted(email.value()), UserErrorCode.USER_ALREADY_EXISTS, email.value());
+            throw BusinessException.of(UserErrorCode.USER_ALREADY_EXISTS.getCode(), List.of(email.value()));
         }
 
         // 登録ユーザ作成
@@ -125,6 +126,6 @@ public class UserCommandService {
      */
     private User findUserById(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> BusinessException.of("user %s is not found".formatted(userId), UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> BusinessException.of(UserErrorCode.USER_NOT_FOUND.getCode()));
     }
 }

@@ -1,6 +1,6 @@
 package com.myiam.module.auth.jwk;
 
-import com.myiam.common.error.SystemException;
+import com.myiam.common.error.exception.SystemException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;

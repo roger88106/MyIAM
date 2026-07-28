@@ -1,6 +1,6 @@
 package com.myiam.module.user.domain.user;
 
-import com.myiam.common.error.BusinessException;
+import com.myiam.common.error.exception.BusinessException;
 import com.myiam.common.model.domain.AggregateRoot;
 import com.myiam.module.user.event.*;
 import lombok.Builder;
@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.jmolecules.ddd.annotation.Identity;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -120,7 +121,7 @@ public class User extends AggregateRoot {
 
         // 古いパスワードが一致していない場合、エラーとする
         if (!passwordHasher.matches(oldPassword, password)) {
-            throw BusinessException.of("old password is not matched", UserErrorCode.PASSWORD_NOT_MATCHED);
+            throw BusinessException.of(UserErrorCode.PASSWORD_NOT_MATCHED.getCode());
         }
 
         // パスワード変更
@@ -230,7 +231,7 @@ public class User extends AggregateRoot {
      */
     private void throwIfDisabled() {
         if (!status.enabled()) {
-            throw BusinessException.of("User is already disabled", UserErrorCode.USER_ALREADY_DISABLED, id);
+            throw BusinessException.of(UserErrorCode.USER_ALREADY_DISABLED.getCode(), List.of(id));
         }
     }
 

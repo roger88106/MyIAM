@@ -1,6 +1,6 @@
 package com.myiam.module.user.domain.user;
 
-import com.myiam.common.error.SystemException;
+import com.myiam.common.error.exception.SystemException;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.regex.Pattern;
@@ -28,9 +28,9 @@ public record HashedPassword(String value) {
     public HashedPassword {
         // パスワードハッシュの検証
         if (value == null || value.isBlank()) {
-            throw SystemException.of("password can't be blank", null, UserErrorCode.PASSWORD_HASH_IS_BLANK);
+            throw SystemException.of("password can't be blank", null, UserErrorCode.PASSWORD_HASH_IS_BLANK.getCode());
         } else if (!STRUCTURE_PATTERN.matcher(value).matches()) {
-            throw SystemException.of("password is not encoded", null, UserErrorCode.PASSWORD_NOT_ENCODED);
+            throw SystemException.of("password is not encoded", null, UserErrorCode.PASSWORD_NOT_ENCODED.getCode());
         }
     }
 }
