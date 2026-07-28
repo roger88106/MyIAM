@@ -46,10 +46,10 @@ public record ErrorCode(@NonNull String code, @NonNull ErrorType type, @NonNull 
     /**
      * エラーコードを作成するファクトリー
      *
-     * @param code        エラーコード
-     * @param type        エラータイプ
-     * @param message     メッセージ
-     * @param displayCode 表示用エラーコード
+     * @param code     エラーコード
+     * @param type     エラータイプ
+     * @param message  メッセージ
+     * @param exposure エラー情報の公開レベル
      * @return {@link ErrorCode}
      */
     public static ErrorCode of(String code, ErrorType type, I18nMessage message, ErrorExposure exposure) {
