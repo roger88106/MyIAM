@@ -121,7 +121,7 @@ public class User extends AggregateRoot {
 
         // 古いパスワードが一致していない場合、エラーとする
         if (!passwordHasher.matches(oldPassword, password)) {
-            throw BusinessException.of(UserErrorCode.PASSWORD_NOT_MATCHED.getCode());
+            throw BusinessException.of(UserErrorCode.PASSWORD_NOT_MATCHED);
         }
 
         // パスワード変更
@@ -231,7 +231,7 @@ public class User extends AggregateRoot {
      */
     private void throwIfDisabled() {
         if (!status.enabled()) {
-            throw BusinessException.of(UserErrorCode.USER_ALREADY_DISABLED.getCode(), List.of(id));
+            throw BusinessException.of(UserErrorCode.USER_ALREADY_DISABLED, List.of(id));
         }
     }
 

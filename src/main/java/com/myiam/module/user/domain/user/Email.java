@@ -25,12 +25,12 @@ public record Email(String value) {
 
         // 必須チェック
         if (value == null) {
-            throw BusinessException.of(UserErrorCode.INVALID_EMAIL.getCode());
+            throw BusinessException.of(UserErrorCode.INVALID_EMAIL);
         }
 
         // フォーマットチェック
         if (!validEmailFormat(value)) {
-            throw BusinessException.of(UserErrorCode.INVALID_EMAIL_FORMAT.getCode());
+            throw BusinessException.of(UserErrorCode.INVALID_EMAIL_FORMAT);
         }
     }
 

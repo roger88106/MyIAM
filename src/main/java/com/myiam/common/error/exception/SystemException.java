@@ -1,7 +1,7 @@
 package com.myiam.common.error.exception;
 
 import com.myiam.common.error.CommonErrorCode;
-import com.myiam.common.error.ErrorCode;
+import com.myiam.common.error.ErrorCodeProvider;
 import com.myiam.common.error.ErrorDetail;
 import lombok.NonNull;
 
@@ -20,26 +20,26 @@ public class SystemException extends BaseException {
     /**
      * {@code SystemException}の新しいインスタンスを作成して返します。
      *
-     * @param debugMessage デバッグ用メッセージ
-     * @param cause        原因となった例外
-     * @param errorCode    エラーコード
+     * @param debugMessage      デバッグ用メッセージ
+     * @param cause             原因となった例外
+     * @param errorCodeProvider エラーコードプロバイター
      * @return 指定されたパラメータで初期化された新しい{@code SystemException}インスタンス
      */
-    public static SystemException of(String debugMessage, Throwable cause, @NonNull ErrorCode errorCode) {
-        return new SystemException(debugMessage, cause, ErrorDetail.of(errorCode));
+    public static SystemException of(String debugMessage, Throwable cause, @NonNull ErrorCodeProvider errorCodeProvider) {
+        return new SystemException(debugMessage, cause, ErrorDetail.of(errorCodeProvider.getCode()));
     }
 
     /**
      * {@code SystemException}の新しいインスタンスを作成して返します。
      *
-     * @param debugMessage  デバッグ用メッセージ
-     * @param cause         原因となった例外
-     * @param errorCode     エラーコード
-     * @param messageParams メッセージパラメータ
+     * @param debugMessage      デバッグ用メッセージ
+     * @param cause             原因となった例外
+     * @param errorCodeProvider エラーコードプロバイター
+     * @param messageParams     メッセージパラメータ
      * @return 指定されたパラメータで初期化された新しい{@code SystemException}インスタンス
      */
-    public static SystemException of(String debugMessage, Throwable cause, @NonNull ErrorCode errorCode, List<Object> messageParams) {
-        return new SystemException(debugMessage, cause, ErrorDetail.of(errorCode, messageParams));
+    public static SystemException of(String debugMessage, Throwable cause, @NonNull ErrorCodeProvider errorCodeProvider, List<Object> messageParams) {
+        return new SystemException(debugMessage, cause, ErrorDetail.of(errorCodeProvider.getCode(), messageParams));
     }
 
     /**

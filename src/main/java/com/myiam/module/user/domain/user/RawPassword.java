@@ -23,10 +23,10 @@ public record RawPassword(String value) {
      */
     public RawPassword {
         if (value == null || value.isBlank()) {
-            throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT.getCode());
+            throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT);
         }
         if (!value.matches(PASSWORD_REGEX)) {
-            throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT.getCode());
+            throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT);
         }
     }
 }

@@ -25,7 +25,7 @@ public class UserFactory {
                     user restore error.
                     userSnapshot: %s
                     """.formatted(snapshot);
-            throw SystemException.of(debugMessage, e, CommonErrorCode.RESTORE_ERROR.getCode());
+            throw SystemException.of(debugMessage, e, CommonErrorCode.RESTORE_ERROR);
         }
     }
 }

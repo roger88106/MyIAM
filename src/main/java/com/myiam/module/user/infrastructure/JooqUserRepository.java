@@ -152,7 +152,7 @@ class JooqUserRepository implements UserRepository {
 
         // 楽観排他された場合、エラーをスローする
         if (affected == 0) {
-            throw BusinessException.of(CommonErrorCode.CONCURRENT_MODIFICATION.getCode());
+            throw BusinessException.of(CommonErrorCode.CONCURRENT_MODIFICATION);
         }
 
         // プロファイル更新

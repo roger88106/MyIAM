@@ -45,7 +45,7 @@ public class UserCommandService {
 
         // ユーザーが既に存在する場合はエラーとする
         if (userRepository.existsByIdentifier(email)) {
-            throw BusinessException.of(UserErrorCode.USER_ALREADY_EXISTS.getCode(), List.of(email.value()));
+            throw BusinessException.of(UserErrorCode.USER_ALREADY_EXISTS, List.of(email.value()));
         }
 
         // 登録ユーザ作成
@@ -126,6 +126,6 @@ public class UserCommandService {
      */
     private User findUserById(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> BusinessException.of(UserErrorCode.USER_NOT_FOUND.getCode()));
+                .orElseThrow(() -> BusinessException.of(UserErrorCode.USER_NOT_FOUND));
     }
 }

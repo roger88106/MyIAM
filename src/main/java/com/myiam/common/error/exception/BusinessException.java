@@ -1,6 +1,6 @@
 package com.myiam.common.error.exception;
 
-import com.myiam.common.error.ErrorCode;
+import com.myiam.common.error.ErrorCodeProvider;
 import com.myiam.common.error.ErrorDetail;
 import lombok.NonNull;
 
@@ -14,22 +14,22 @@ public class BusinessException extends BaseException {
     /**
      * {@code BusinessException}の新しいインスタンスを作成して返します。
      *
-     * @param errorCode エラーコード
+     * @param errorCodeProvider エラーコードプロバイダー
      * @return 指定されたパラメータで初期化された新しい{@code BusinessException}インスタンス
      */
-    public static BusinessException of(@NonNull ErrorCode errorCode) {
-        return new BusinessException(ErrorDetail.of(errorCode));
+    public static BusinessException of(@NonNull ErrorCodeProvider errorCodeProvider) {
+        return new BusinessException(ErrorDetail.of(errorCodeProvider.getCode()));
     }
 
     /**
      * {@code BusinessException}の新しいインスタンスを作成して返します。
      *
-     * @param errorCode     エラーコード
-     * @param messageParams メッセージパラメータ
+     * @param errorCodeProvider エラーコードプロバイダー
+     * @param messageParams     メッセージパラメータ
      * @return 指定されたパラメータで初期化された新しい{@code BusinessException}インスタンス
      */
-    public static BusinessException of(@NonNull ErrorCode errorCode, List<Object> messageParams) {
-        return new BusinessException(ErrorDetail.of(errorCode, messageParams));
+    public static BusinessException of(@NonNull ErrorCodeProvider errorCodeProvider, List<Object> messageParams) {
+        return new BusinessException(ErrorDetail.of(errorCodeProvider.getCode(), messageParams));
     }
 
     /**
