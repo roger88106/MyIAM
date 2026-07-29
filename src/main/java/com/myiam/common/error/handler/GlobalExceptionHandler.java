@@ -8,9 +8,12 @@ import com.myiam.common.error.exception.BusinessException;
 import com.myiam.common.error.exception.SystemException;
 import com.myiam.common.message.CommonMessage;
 import com.myiam.common.message.MessageHelper;
+import io.micrometer.tracing.Tracer;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * グローバルエラーハンドラー。
@@ -33,6 +37,11 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * メッセージヘルパー
      */
     private final MessageHelper messageHelper;
+
+    /**
+     * トレース
+     */
+    private final Tracer tracer;
 
     /**
      * ProblemDetail追加パラメータ：エラーコード
@@ -67,9 +76,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         detail.setProperty(DETAIL_PROPERTY_MESSAGE, ex.getErrorDetail().message());
 
         // 戻り値設定
-        return ResponseEntity
-                .status(detail.getStatus())
-                .body(detail);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
     }
 
     /**
@@ -80,15 +87,17 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(SystemException.class)
     public ResponseEntity<ProblemDetail> handleSystemException(SystemException ex, WebRequest request) {
-        // ToDo: トレースID取得
         // ToDo: DB登録で追跡？ などの検討
+
+        // トレース情報取得
+        ThreadInfo threadInfo = getTraceInfo();
 
         // ProblemDetail オブジェクト作成
         ProblemDetail detail = buildDefaultProblemDetail(ex, request);
 
         // カスタマイズ項目設定
         // トレース ID
-        detail.setProperty(DETAIL_PROPERTY_TRACE_ID, ""); // ToDo: トレースID取得
+        detail.setProperty(DETAIL_PROPERTY_TRACE_ID, threadInfo.traceId);
 
         // 戻り値設定
         return ResponseEntity
@@ -104,8 +113,10 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleAllException(Exception ex, WebRequest request) {
-        // ToDo: トレースID取得
         // ToDo: DB登録で追跡？ などの検討
+
+        // トレース情報取得
+        ThreadInfo threadInfo = getTraceInfo();
 
         // HTTP ステータス取得
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -127,7 +138,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         // カスタマイズ項目設定
         // トレース ID
-        detail.setProperty(DETAIL_PROPERTY_TRACE_ID, ""); // ToDo: トレースID取得
+        detail.setProperty(DETAIL_PROPERTY_TRACE_ID, threadInfo.traceId);
 
         // 戻り値設定
         return ResponseEntity
@@ -205,5 +216,32 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             // ToDo 格下げ関連の処理を再検討
             case DOWNGRADE_REQUIRED -> CommonErrorCode.SYSTEM_ERROR.getCode();
         };
+    }
+
+    /**
+     * トレース情報取得
+     *
+     * @return トレース情報
+     */
+    private ThreadInfo getTraceInfo() {
+        return Optional.ofNullable(tracer.currentSpan())
+                .map(span -> ThreadInfo.builder()
+                        .traceId(span.context().traceId())
+                        .spanId(span.context().spanId())
+                        .build()
+                )
+                .orElse(null);
+    }
+
+    // ============================== プライベートレコード ==============================
+
+    /**
+     * トレース情報
+     *
+     * @param traceId トレースID
+     * @param spanId  スパンID
+     */
+    @Builder
+    private record ThreadInfo(@Nullable String traceId, @Nullable String spanId) {
     }
 }

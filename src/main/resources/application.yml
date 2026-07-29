@@ -23,6 +23,8 @@ logging:
   level:
     root: INFO
     com.myiam: DEBUG
+  pattern:
+    correlation: "[%X{traceId:-}] [%X{spanId:-}] "
 
 jwt:
   key:
