@@ -14,7 +14,7 @@ public class UserMessage {
     private static final String PREFIX = "myiam.user";
 
     /**
-     * ユーザー名 又は パスワードが不正です。
+     * パスワードが一致していない。
      */
     public static final I18nMessage INVALID_PASSWORD = I18nMessage.of(PREFIX, "invalid_password");
 
@@ -33,5 +33,4 @@ public class UserMessage {
      * UserID: {userId}
      */
     public static final I18nMessage USER_ALREADY_DISABLED = I18nMessage.of(PREFIX, "user_already_disabled", List.of("userId"));
-
 }

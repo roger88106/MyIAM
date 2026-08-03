@@ -1,6 +1,7 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.vo;
 
 import com.myiam.common.error.exception.SystemException;
+import com.myiam.module.user.domain.user.UserErrorCode;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.regex.Pattern;

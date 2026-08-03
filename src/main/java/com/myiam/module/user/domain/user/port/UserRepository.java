@@ -1,5 +1,7 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.port;
 
+import com.myiam.module.user.domain.user.User;
+import com.myiam.module.user.domain.user.vo.Email;
 import org.jmolecules.ddd.annotation.Repository;
 
 import java.util.Optional;

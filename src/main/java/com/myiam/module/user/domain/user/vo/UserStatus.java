@@ -1,4 +1,4 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.vo;
 
 import lombok.Builder;
 import org.jmolecules.ddd.annotation.ValueObject;
@@ -33,6 +33,8 @@ public record UserStatus(boolean enabled, Instant createdAt, Instant lastLoginAt
         Objects.requireNonNull(createdAt, "createdAt must not be null");
         Objects.requireNonNull(passwordChangedAt, "passwordChangedAt must not be null");
     }
+
+    // ============================== 状態更新メソッド ==============================
 
     /**
      * 新規ユーザーのステータスを作成する
@@ -70,4 +72,6 @@ public record UserStatus(boolean enabled, Instant createdAt, Instant lastLoginAt
                 .enabled(false)
                 .build();
     }
+
+    // ============================== 状態更新系 ==============================
 }

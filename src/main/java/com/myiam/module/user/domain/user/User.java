@@ -2,6 +2,8 @@ package com.myiam.module.user.domain.user;
 
 import com.myiam.common.error.exception.BusinessException;
 import com.myiam.common.model.domain.AggregateRoot;
+import com.myiam.module.user.domain.user.port.PasswordHasher;
+import com.myiam.module.user.domain.user.vo.*;
 import com.myiam.module.user.event.*;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

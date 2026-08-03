@@ -1,6 +1,8 @@
 package com.myiam.module.user.presentation.model.request;
 
-import jakarta.validation.constraints.Email;
+import com.myiam.module.user.presentation.validation.Email;
+import com.myiam.module.user.presentation.validation.Password;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * ユーザー登録リクエスト
@@ -10,9 +12,15 @@ import jakarta.validation.constraints.Email;
  * @param profile  プロファイル
  */
 public record RegisterUserRequest(
+        @NotEmpty
         @Email
         String email,
+
+        @NotEmpty
+        @Password
         String password,
+
+        @NotEmpty
         Profile profile
 ) {
 
@@ -22,6 +30,11 @@ public record RegisterUserRequest(
      * @param familyName 姓
      * @param givenName  名
      */
-    public record Profile(String familyName, String givenName) {
+    public record Profile(
+            @NotEmpty
+            String familyName,
+
+            @NotEmpty
+            String givenName) {
     }
 }

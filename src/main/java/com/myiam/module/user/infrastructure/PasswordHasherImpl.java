@@ -1,8 +1,8 @@
 package com.myiam.module.user.infrastructure;
 
-import com.myiam.module.user.domain.user.HashedPassword;
-import com.myiam.module.user.domain.user.PasswordHasher;
-import com.myiam.module.user.domain.user.RawPassword;
+import com.myiam.module.user.domain.user.port.PasswordHasher;
+import com.myiam.module.user.domain.user.vo.HashedPassword;
+import com.myiam.module.user.domain.user.vo.RawPassword;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

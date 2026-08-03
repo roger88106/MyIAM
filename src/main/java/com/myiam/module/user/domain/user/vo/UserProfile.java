@@ -1,4 +1,4 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.vo;
 
 import org.jmolecules.ddd.annotation.ValueObject;
 

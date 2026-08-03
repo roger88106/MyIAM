@@ -1,5 +1,7 @@
 package com.myiam.module.user.presentation.model.request;
 
+import jakarta.validation.constraints.NotEmpty;
+
 /**
  * プロフィール更新リクエスト
  *
@@ -7,7 +9,9 @@ package com.myiam.module.user.presentation.model.request;
  * @param givenName 名
  */
 public record UpdateProfileRequest(
+        @NotEmpty
         String familyName,
-        String givenName
-) {
+
+        @NotEmpty
+        String givenName) {
 }

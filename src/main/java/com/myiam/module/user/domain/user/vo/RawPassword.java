@@ -1,6 +1,7 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.vo;
 
 import com.myiam.common.error.exception.BusinessException;
+import com.myiam.module.user.domain.user.UserErrorCode;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 /**
@@ -28,5 +29,15 @@ public record RawPassword(String value) {
         if (!value.matches(PASSWORD_REGEX)) {
             throw BusinessException.of(UserErrorCode.INVALID_PASSWORD_FORMAT);
         }
+    }
+
+    /**
+     * パスワード (明文)のフォーマット検証
+     *
+     * @param rawPassword パスワード (明文)
+     * @return 有効な場合は {@code true}、それ以外の場合は {@code false}
+     */
+    public static boolean isValidFormat(String rawPassword) {
+        return rawPassword.matches(PASSWORD_REGEX);
     }
 }

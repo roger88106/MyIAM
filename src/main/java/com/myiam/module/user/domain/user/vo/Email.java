@@ -1,6 +1,7 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.vo;
 
 import com.myiam.common.error.exception.BusinessException;
+import com.myiam.module.user.domain.user.UserErrorCode;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ public record Email(String value) {
         }
 
         // フォーマットチェック
-        if (!validEmailFormat(value)) {
+        if (!isValidFormat(value)) {
             throw BusinessException.of(UserErrorCode.INVALID_EMAIL_FORMAT);
         }
     }
@@ -40,7 +41,7 @@ public record Email(String value) {
      * @param email 検証するメールアドレス
      * @return メールアドレスが有効な場合は {@code true}、それ以外の場合は {@code false}
      */
-    private static boolean validEmailFormat(String email) {
+    public static boolean isValidFormat(String email) {
         if (email == null) return true;
         return EMAIL_PATTERN.matcher(email).matches();
     }

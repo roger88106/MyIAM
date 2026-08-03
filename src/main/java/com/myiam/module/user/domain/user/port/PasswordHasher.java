@@ -1,4 +1,7 @@
-package com.myiam.module.user.domain.user;
+package com.myiam.module.user.domain.user.port;
+
+import com.myiam.module.user.domain.user.vo.HashedPassword;
+import com.myiam.module.user.domain.user.vo.RawPassword;
 
 /**
  * パスワードハッシュ化処理クラス
