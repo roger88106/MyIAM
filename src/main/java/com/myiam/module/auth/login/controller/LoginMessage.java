@@ -1,15 +1,13 @@
-package com.myiam.module.auth.login;
+package com.myiam.module.auth.login.controller;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * ログイン用の定数
+ * ログインメッセージ
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class LoginConst {
-
-    // ============================== i18nキー ==============================
+class LoginMessage {
 
     /**
      * ユーザーの資格情報が無効
@@ -31,10 +29,4 @@ public class LoginConst {
      */
     public static final String UNKNOWN_ERROR = "login.error.unknown";
 
-    // ============================== タイムリーフのモデルキー ==============================
-
-    /**
-     * エラーメッセージ
-     */
-    public static final String THYMELEAF_ERROR_MESSAGE = "errorMessage";
 }

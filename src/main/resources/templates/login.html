@@ -137,12 +137,8 @@
     <h1>MyIAM</h1>
     <p class="subtitle">アカウントにログイン</p>
 
-    <!--
-        認証失敗メッセージ。
-        controller が session の認証例外を i18n キーに変換し、errorMessage として渡す。
-          messages.properties 整備後は th:text="#{${errorMessage}}" に差し替える。
-    -->
-    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}">
+    <!-- 認証失敗メッセージ。 -->
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="#{${errorMessage}}">
         ログインに失敗しました。
     </div>
 

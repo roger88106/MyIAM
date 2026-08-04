@@ -1,6 +1,5 @@
 package com.myiam.module.auth.login.controller;
 
-import com.myiam.module.auth.login.LoginConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -56,19 +55,22 @@ class LoginController {
 
             // 認証エラーをi18nキーに変換する
             String errorKey = switch (e) {
-                case UsernameNotFoundException ignored -> LoginConst.INVALID_CREDENTIALS;
-                case BadCredentialsException ignored -> LoginConst.INVALID_CREDENTIALS;
-                case LockedException ignored -> LoginConst.ACCOUNT_LOCKED;
-                case DisabledException ignored -> LoginConst.ACCOUNT_DISABLED;
-                default -> LoginConst.UNKNOWN_ERROR;
+                // ユーザーが見つからない場合
+                case UsernameNotFoundException ignored -> LoginMessage.INVALID_CREDENTIALS;
+                // パスワードが間違った場合
+                case BadCredentialsException ignored -> LoginMessage.INVALID_CREDENTIALS;
+                // ユーザーがロックされた場合
+                case LockedException ignored -> LoginMessage.ACCOUNT_LOCKED;
+                // ユーザーが無効化された場合
+                case DisabledException ignored -> LoginMessage.ACCOUNT_DISABLED;
+                // 上記以外の場合
+                default -> LoginMessage.UNKNOWN_ERROR;
             };
 
-            // ToDo: メッセージをi18n変換、タイムリーフで解析するのもいい（再検討）
-
             // エラーメッセージを画面にセットする
-            model.addAttribute(LoginConst.THYMELEAF_ERROR_MESSAGE, errorKey);
+            model.addAttribute("errorMessage", errorKey);
 
-            // セッションから認証エラーを削除する
+            // セッションから消費済みの認証エラーを削除する
             session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
         }
     }
