@@ -1,4 +1,4 @@
-package com.myiam.module.auth.config;
+package com.myiam.config.application;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * パスワードエンコーダーの設定
  */
 @Configuration
-public class PasswordEncoderConfig {
+class PasswordEncoderConfig {
     /**
      * パスワードエンコーダーの設定。
      *

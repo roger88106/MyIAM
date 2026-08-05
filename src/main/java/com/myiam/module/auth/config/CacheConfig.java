@@ -1,13 +1,12 @@
 package com.myiam.module.auth.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.myiam.module.auth.config.bean.AuthCacheManager;
 import com.myiam.module.auth.shared.constant.CacheNameConst;
 import lombok.Getter;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,7 +20,7 @@ import java.util.Set;
  */
 @Configuration
 @EnableCaching
-@ConfigurationProperties(prefix = "app.cache")
+@ConfigurationProperties(prefix = "app.cache.auth")
 class CacheConfig {
 
     /**
@@ -37,8 +36,8 @@ class CacheConfig {
      * @return キャッシュマネージャー
      */
     @Bean
-    public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+    public AuthCacheManager cacheManager() {
+        AuthCacheManager cacheManager = new AuthCacheManager();
 
         // ソース中で定義したキャッシュ名を取得
         Set<String> allowedNames = new HashSet<>(CacheNameConst.CACHE_NAMES);

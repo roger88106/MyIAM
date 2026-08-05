@@ -1,8 +1,8 @@
 package com.myiam.module.auth.server.client;
 
+import com.myiam.module.auth.config.bean.AuthCacheManager;
 import org.jooq.DSLContext;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -28,7 +28,7 @@ class ClientInternalConfig {
      * @return ラップされた RegisteredClientRepository
      */
     @Bean
-    RegisteredClientRepository registeredClientRepository(DSLContext dsl, CacheManager cacheManager) {
+    RegisteredClientRepository registeredClientRepository(DSLContext dsl, AuthCacheManager cacheManager) {
         // RDB にアクセスするリポジトリ
         RegisteredClientRepository jooqRepository = new JooqRegisteredClientRepository(dsl);
 
