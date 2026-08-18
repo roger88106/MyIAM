@@ -18,6 +18,13 @@ spring:
       port: 16379
   modulith:
     detection-strategy: explicitly-annotated
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://localhost:8080
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
 
 logging:
   level:
@@ -44,3 +51,8 @@ app:
         user_claims: "expireAfterWrite=15m"
 
 #ToDo: 敏感情報を別ファイルに移動する（ビルド流れ調整合わせて）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: beans,conditions

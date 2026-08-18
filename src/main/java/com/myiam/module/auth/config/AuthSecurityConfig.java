@@ -46,7 +46,7 @@ class AuthSecurityConfig {
                 // OIDC (OpenID Connect) を有効化する
                 .oidc(Customizer.withDefaults());
 
-        http
+        return http
                 // 認可サーバーのエンドポイントを対象として設定
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 // 認可サーバーの構成
@@ -65,9 +65,8 @@ class AuthSecurityConfig {
                                 new LoginUrlAuthenticationEntryPoint(loginPath),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
                 // デフォルトの JwtCustomizerを設定
-                .oauth2ResourceServer((rs) -> rs.jwt(Customizer.withDefaults()));
-
-        return http.build();
+                .oauth2ResourceServer((rs) -> rs.jwt(Customizer.withDefaults()))
+                .build();
     }
 
     /**
@@ -85,16 +84,13 @@ class AuthSecurityConfig {
             AuthenticationProvider authenticationProvider,
             AuthenticationFailureHandler authenticationFailureHandler
     ) {
-
-        http
+        return http
                 // 認証プロバイダー適用
                 .authenticationProvider(authenticationProvider)
+                // ログインパスにマッチするリクエストのみ認証処理を適用
+                .securityMatcher(loginPath)
                 // リクエストごとの認可ルールの設定
-                .authorizeHttpRequests((authorize) -> authorize
-                        // ログインページおよび静的リソース（CSS、JS）は認証不要でアクセス可能
-                        .requestMatchers(loginPath, "/error", "/css/**", "/js/**").permitAll()
-                        // その他すべてのリクエストは認証を必須とする
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 // フォームログインの設定
                 .formLogin(form -> form
                         // カスタムログインページのパスを指定
@@ -102,9 +98,8 @@ class AuthSecurityConfig {
                         // 認証失敗時のハンドラー
                         .failureHandler(authenticationFailureHandler)
                         // ログインページへのアクセスを全ユーザーに許可
-                        .permitAll());
-
-        return http.build();
+                        .permitAll())
+                .build();
     }
 
 }

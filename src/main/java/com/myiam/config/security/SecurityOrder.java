@@ -18,9 +18,6 @@ public class SecurityOrder {
      */
     public static final int AUTHORIZATION = 1;
 
-
-
-
     /**
      * リソース フィルターチェン
      */
