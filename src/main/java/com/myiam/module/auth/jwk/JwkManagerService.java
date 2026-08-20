@@ -1,17 +1,24 @@
 package com.myiam.module.auth.jwk;
 
 import com.myiam.common.error.exception.SystemException;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
-import jakarta.annotation.PostConstruct;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * JWK 管理サービス。
@@ -25,11 +32,15 @@ class JwkManagerService {
      */
     private final JwkRepository jwkRepository;
 
-    /** 鍵の有効期間 */
+    /**
+     * 鍵の有効期間
+     */
     @Value("${jwt.key.ttl}")
     private final Duration keyTtl;
 
-    /** 鍵の交換スケジュールCRON */
+    /**
+     * 鍵の交換スケジュールCRON
+     */
     @Value("${jwt.key.rotation.cron}")
     private final String cron;
 
@@ -39,11 +50,7 @@ class JwkManagerService {
      * @return JWK セット
      */
     JWKSet getJWKSet() {
-        // 有効なキーを取得
-        List<Jwk> jwks = jwkRepository.selectKeys();
-
-        // JWK セットに変換
-        return toJWKSet(jwks);
+        return new JWKSet(jwkRepository.selectKeys());
     }
 
     /**
@@ -51,10 +58,9 @@ class JwkManagerService {
      * アプリケーション起動時にデータベースから最新の鍵情報を確認し、必要に応じてローテーションを行う。
      */
     @Transactional
-    @PostConstruct
-    void init() {
+    public void init() {
         // 現在有効な最新の鍵をビューとして取得し、ドメインモデルに変換
-        Jwk jwk = jwkRepository.selectKeys().stream()
+        JWK jwk = jwkRepository.selectKeys().stream()
                 .findFirst()
                 .orElse(null);
 
@@ -65,7 +71,7 @@ class JwkManagerService {
         }
 
         // 必要な場合、ローテーションを実行
-        if (jwk.needsRotation(cron)) {
+        if (needsRotation(jwk, cron)) {
             jwkRotation();
         }
     }
@@ -75,34 +81,53 @@ class JwkManagerService {
      * 新しい鍵ペアを生成し、データベースに保存する。
      */
     @Transactional
-    void jwkRotation() {
+    public void jwkRotation() {
         // 新規JWKを生成
-        Jwk jwk = Jwk.generate(keyTtl);
+        JWK jwk = generateJwk();
 
         // データベースへ保存 (store)
         jwkRepository.storeKey(jwk);
     }
 
     /**
-     * JWK セットへの変換。
+     * JWKの生成
      *
-     * @param jwks JWK リスト
-     * @return 構築された JWK セットオブジェクト
+     * @return RS256 形式の JWK
      */
-    private JWKSet toJWKSet(List<Jwk> jwks) {
-        // フレームワークのJWKに変換  ※com.nimbusds.jose.jwk.JWK
-        List<JWK> parsedJwks = new ArrayList<>();
+    private JWK generateJwk() {
         try {
-            for (Jwk jwk : jwks) {
-                JWK parsedJwk = JWK.parse(jwk.data().key().toJSONString());
-                parsedJwks.add(parsedJwk);
-            }
-        } catch (Exception e) {
-            throw SystemException.of("JWK Parse Error.", e);
-        }
+            String kid = UUID.randomUUID().toString();
+            Instant now = Instant.now();
 
-        // 変換後のJWKリストをJWKSetオブジェクトとして返却
-        return new JWKSet(parsedJwks);
+            // RSA 形式の JWK 生成
+            return new RSAKeyGenerator(2048)
+                    .keyID(kid)
+                    .keyUse(KeyUse.SIGNATURE)
+                    .algorithm(JWSAlgorithm.RS256)
+                    .issueTime(Date.from(now))
+                    .expirationTime(Date.from(now.plus(keyTtl)))
+                    .generate();
+        } catch (JOSEException e) {
+            throw SystemException.of("Key Generation Error", e);
+        }
+    }
+
+    /**
+     * ローテーションが必要かどうかを判定する。
+     *
+     * @param jwk            JWK オブジェクト
+     * @param cronExpression ローテーションのスケジューリング (Cron式)
+     * @return ローテーションが必要な場合は true
+     */
+    private boolean needsRotation(JWK jwk, String cronExpression) {
+        var zoneId = ZoneId.systemDefault();
+        var cron = CronExpression.parse(cronExpression);
+
+        // JWK の作成時間から、次のローテーション実行時間を算出
+        ZonedDateTime nextRunZoned = cron.next(jwk.getIssueTime().toInstant().atZone(zoneId));
+
+        // 次のローテーション実行時間が null または現在時刻より過去の場合、ローテーションが必要
+        return nextRunZoned == null || !nextRunZoned.isAfter(ZonedDateTime.now(zoneId));
     }
 
 }

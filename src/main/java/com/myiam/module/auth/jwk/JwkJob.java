@@ -1,6 +1,9 @@
 package com.myiam.module.auth.jwk;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,14 @@ class JwkJob {
      * JWK 管理サービス
      */
     private final JwkManagerService jwkManagerService;
+
+    /**
+     * 初期化処理実行
+     */
+    @EventListener(ContextRefreshedEvent.class)
+    void runInit() {
+        jwkManagerService.init();
+    }
 
     /**
      * キーローテーション実行処理。<br />
