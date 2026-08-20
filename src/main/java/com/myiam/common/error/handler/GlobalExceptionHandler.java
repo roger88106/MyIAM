@@ -140,6 +140,8 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         // トレース ID
         detail.setProperty(DETAIL_PROPERTY_TRACE_ID, threadInfo.traceId);
 
+        logger.error("システムエラーが発生しました。", ex);
+
         // 戻り値設定
         return ResponseEntity
                 .status(status)

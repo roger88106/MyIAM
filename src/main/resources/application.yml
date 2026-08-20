@@ -45,13 +45,16 @@ app:
   cache:
     auth:
       specs:
-        jwk: "expireAfterWrite=1h,maximumSize=50"
+        jwk: "expireAfterWrite=10m"
         registered_client: "expireAfterWrite=10m,maximumSize=100"
-        registered_client_id_map: "expireAfterWrite=10d,maximumSize=9999"
+        registered_client_id_map: "expireAfterWrite=10m,maximumSize=9999"
         user_claims: "expireAfterWrite=15m"
 
-#ToDo: 敏感情報を別ファイルに移動する（ビルド流れ調整合わせて）
+#ToDo: テスト用と敏感情報などを別ファイルに移動する（ビルド流れ調整合わせて）
 management:
+  tracing:
+    sampling:
+      probability: 0.0
   endpoints:
     web:
       exposure:

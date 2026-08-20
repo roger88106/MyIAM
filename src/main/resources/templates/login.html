@@ -159,12 +159,14 @@
         <div class="field">
             <!-- ログイン ID は email。ただし Spring 既定のパラメータ名 username を使用 -->
             <label for="username">メールアドレス</label>
-            <input type="text" id="username" name="username" required autofocus autocomplete="username"/>
+            <!-- ToDo: テスト用値を削除-->
+            <input type="text" id="username" name="username" required autofocus autocomplete="username" value="test@test.com"/>
         </div>
 
         <div class="field">
             <label for="password">パスワード</label>
-            <input type="password" id="password" name="password" required autocomplete="current-password"/>
+            <!-- ToDo: テスト用値を削除-->
+            <input type="password" id="password" name="password" required autocomplete="current-password" value="password01"/>
         </div>
 
         <button type="submit" class="btn">ログイン</button>

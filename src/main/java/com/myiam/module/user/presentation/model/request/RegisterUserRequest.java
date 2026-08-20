@@ -2,7 +2,9 @@ package com.myiam.module.user.presentation.model.request;
 
 import com.myiam.module.user.presentation.validation.Email;
 import com.myiam.module.user.presentation.validation.Password;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * ユーザー登録リクエスト
@@ -20,7 +22,8 @@ public record RegisterUserRequest(
         @Password
         String password,
 
-        @NotEmpty
+        @Valid
+        @NotNull
         Profile profile
 ) {
 

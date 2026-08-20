@@ -49,7 +49,7 @@ class UserDirectoryImpl implements UserDirectory {
      * @return ユーザークレーム
      */
     @Override
-    @Cacheable(cacheNames = USER_CLAIMS, key = "#userId", unless="#result.isEmpty()")
+    @Cacheable(cacheNames = USER_CLAIMS, key = "#userId", unless="#result == null")
     public Optional<UserClaims> findClaims(UUID userId) {
         return authUserApi.findUserClaims(userId)
                 .map(mapper::toUserClaims);
