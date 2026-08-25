@@ -1,7 +1,6 @@
 package com.myiam.module.user.api.auth;
 
 import com.myiam.module.user.application.UserQueryService;
-import com.myiam.module.user.application.model.query.UserClaimsQuery;
 import com.myiam.module.user.application.model.query.UserCredentialQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -48,11 +47,7 @@ public class AuthUserApi {
      * @return ユーザークレーム
      */
     public Optional<AuthUserApiResponse.UserClaims> findUserClaims(UUID userId) {
-        var query = UserClaimsQuery.builder()
-                .userId(userId)
-                .build();
-
-        return userQueryService.findUserClaims(query)
+        return userQueryService.findUserClaims(userId)
                 .map(authUserMapper::toUserClaims);
     }
 }

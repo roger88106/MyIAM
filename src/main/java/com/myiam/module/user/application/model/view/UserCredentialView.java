@@ -1,4 +1,4 @@
-package com.myiam.module.user.application.model.result;
+package com.myiam.module.user.application.model.view;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,6 +12,6 @@ import java.util.UUID;
  * @param passwordLocked パスワードロック中
  * @param passwordChangedAt パスワード変更日時
  */
-public record UserCredential(UUID userId, String password, boolean enabled, boolean passwordLocked,
-                             Instant passwordChangedAt) {
+public record UserCredentialView(UUID userId, String password, boolean enabled, boolean passwordLocked,
+                                 Instant passwordChangedAt) {
 }

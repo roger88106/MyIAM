@@ -5,19 +5,21 @@ import com.myiam.module.user.application.UserQueryService;
 import com.myiam.module.user.presentation.model.request.ChangePasswordRequest;
 import com.myiam.module.user.presentation.model.request.RegisterUserRequest;
 import com.myiam.module.user.presentation.model.request.UpdateProfileRequest;
-import com.myiam.module.user.presentation.model.response.RegisterUserResponse;
+import com.myiam.module.user.presentation.model.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.UUID;
 
 /**
  * ユーザーコントローラー
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 class UserController {
 
@@ -40,29 +42,47 @@ class UserController {
 
 // ============================== GET ==============================
 
+    /**
+     * ユーザー取得
+     *
+     * @param userId ユーザーID
+     * @return Http 200 : {@link UserResponse}
+     */
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID userId) {
+        // ユーザー取得
+        var userView = queryService.getUserById(userId);
+
+        // レスポンス設定
+        return ResponseEntity.ok(mapper.toUserResponse(userView));
+    }
+
 // ============================== POST ==============================
 
     /**
      * ユーザー登録
      *
      * @param request ユーザー登録リクエスト
-     * @return Http 200 : ユーザー登録レスポンス
+     * @return Http 201 : VOID
      */
-    @PostMapping
-    public ResponseEntity<RegisterUserResponse> register(
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(
             @RequestBody @Validated RegisterUserRequest request
     ) {
         // ユーザー登録
         UUID userId = commandService.registerUser(mapper.toRegisterUserCommand(request));
 
+        // ロケーション取得
+        URI location = MvcUriComponentsBuilder
+                .fromMethodCall(MvcUriComponentsBuilder.on(UserController.class).getUserById(userId))
+                .build()
+                .toUri();
+
         // レスポンス設定
-        // ToDo: ロケーション決定後、HTTP 201 に変更
-        return ResponseEntity.ok().body(new RegisterUserResponse(userId));
+        return ResponseEntity.created(location).build();
     }
 
 // ============================== PUT ==============================
-
-// ============================== PATCH ==============================
 
     /**
      * パスワード変更
@@ -71,7 +91,7 @@ class UserController {
      * @param request パスワード変更リクエスト
      * @return Http 204 : VOID
      */
-    @PatchMapping("/{userId}/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<Void> changePassword(
             @PathVariable UUID userId,
             @RequestBody @Validated ChangePasswordRequest request
@@ -90,7 +110,7 @@ class UserController {
      * @param request プロファイル更新リクエスト
      * @return Http 204 : VOID
      */
-    @PatchMapping("/{userId}/profile")
+    @PutMapping("/{userId}/profile")
     public ResponseEntity<Void> updateProfile(
             @PathVariable UUID userId,
             @RequestBody @Validated UpdateProfileRequest request
@@ -108,7 +128,7 @@ class UserController {
      * @param userId ユーザー ID
      * @return Http 204 : VOID
      */
-    @PatchMapping("/{userId}/disable")
+    @PutMapping("/{userId}/disable")
     public ResponseEntity<Void> disableUser(@PathVariable UUID userId) {
         // ユーザー無効化
         commandService.disableUser(mapper.toDisableCommand(userId));
@@ -116,6 +136,9 @@ class UserController {
         // レスポンス設定
         return ResponseEntity.noContent().build();
     }
+
+// ============================== PATCH ==============================
+
 
 // ============================== DELETE ==============================
 

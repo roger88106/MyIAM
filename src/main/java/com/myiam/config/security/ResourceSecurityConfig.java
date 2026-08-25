@@ -30,7 +30,7 @@ class ResourceSecurityConfig {
                 // 全ての RESTful API を対象として設定
                 .securityMatcher("/api/**")
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 // CSRFを無効化

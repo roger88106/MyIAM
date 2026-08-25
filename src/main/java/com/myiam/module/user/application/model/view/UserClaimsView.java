@@ -1,4 +1,4 @@
-package com.myiam.module.user.application.model.result;
+package com.myiam.module.user.application.model.view;
 
 import lombok.Builder;
 
@@ -13,5 +13,5 @@ import java.util.UUID;
  * @param givenName 名
  */
 @Builder
-public record UserClaims(UUID userId, String email, String familyName, String givenName) {
+public record UserClaimsView(UUID userId, String email, String familyName, String givenName) {
 }

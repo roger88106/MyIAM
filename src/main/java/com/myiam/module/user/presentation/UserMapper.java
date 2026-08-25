@@ -4,9 +4,11 @@ import com.myiam.module.user.application.model.command.ChangePasswordCommand;
 import com.myiam.module.user.application.model.command.DisableUserCommand;
 import com.myiam.module.user.application.model.command.RegisterUserCommand;
 import com.myiam.module.user.application.model.command.UpdateProfileCommand;
+import com.myiam.module.user.application.model.view.UserDetailView;
 import com.myiam.module.user.presentation.model.request.ChangePasswordRequest;
 import com.myiam.module.user.presentation.model.request.RegisterUserRequest;
 import com.myiam.module.user.presentation.model.request.UpdateProfileRequest;
+import com.myiam.module.user.presentation.model.response.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -52,4 +54,12 @@ interface UserMapper {
      */
     @Mapping(target = "userId", source = "userId")
     DisableUserCommand toDisableCommand(UUID userId);
+
+    /**
+     * {@code UserDetailView} を {@code UserResponse} に変換する
+     *
+     * @param userView 変換する {@code UserDetailView}
+     * @return {@code UserResponse}
+     */
+    UserResponse toUserResponse(UserDetailView userView);
 }
