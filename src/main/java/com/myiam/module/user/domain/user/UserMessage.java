@@ -44,7 +44,7 @@ public class UserMessage {
         public static final String INVALID_PASSWORD = "myiam.user.invalid_password";
 
         /**
-         * ユーザー {username} は既に存在しています。
+         * ユーザーが見つかりません。
          */
         public static final String USER_NOT_FOUND = "myiam.user.user_not_found";
 
