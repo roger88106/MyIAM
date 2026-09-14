@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 public class CommonMessage {
 
     /**
+     * 見つかりませんでした。
+     */
+    public static final I18nMessage NOT_FOUND = I18nMessage.of(Code.NOT_FOUND);
+
+    /**
      * フォーマットが正しくない
      */
     public static final I18nMessage INVALID_FORMAT = I18nMessage.of(Code.INVALID_FORMAT);
@@ -31,6 +36,11 @@ public class CommonMessage {
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Code{
+        /**
+         * 見つかりませんでした。
+         */
+        public static final String NOT_FOUND = "myiam.common.not_found";
+
         /**
          * フォーマットが正しくない
          */

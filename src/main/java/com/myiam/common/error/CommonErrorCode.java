@@ -9,6 +9,10 @@ import com.myiam.common.message.I18nMessage;
 public enum CommonErrorCode implements ErrorCodeProvider {
 
     /**
+     * 見つかりませんでした。
+     */
+    NOT_FOUND(ErrorType.NOT_FOUND_ERROR, CommonMessage.NOT_FOUND),
+    /**
      * 更新処理排他エラー
      */
     CONCURRENT_MODIFICATION(ErrorType.CONFLICT_ERROR, CommonMessage.CONCURRENT_MODIFICATION),
