@@ -128,9 +128,8 @@ class JwkEncodingOAuth2TokenCustomizer implements OAuth2TokenCustomizer<JwtEncod
         // ユーザークレーム取得
         userDirectory.findClaims(UUID.fromString(userId))
                 // ユーザークレーム取得成功する場合、JWT クレーム設定
-                .ifPresent(claims -> {
-                    context.getClaims().claim(StandardClaimNames.PREFERRED_USERNAME, claims.username());
-                });
+                .ifPresent(claims -> context.getClaims()
+                        .claim(StandardClaimNames.PREFERRED_USERNAME, claims.username()));
 
         // 権限をトークンに設定する
         setPermissionsClaim(context, userId);

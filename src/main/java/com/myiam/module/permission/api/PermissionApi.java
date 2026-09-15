@@ -4,8 +4,6 @@ import com.myiam.module.permission.application.PermissionQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 /**
  * 権限API
  */
