@@ -55,9 +55,20 @@ public final class CacheNameConst {
     public static final String USER_CLAIMS = "user_claims";
 
     /**
+     * サブジェクト権限キャッシュ名<br />
+     * <br />
+     * <strong>想定の格納内容：</strong>
+     * <ul>
+     *   <li>キー：サブジェクト</li>
+     *   <li>値：サブジェクト権限情報(SubjectPermissions.class)</li>
+     * </ul>
+     */
+    public static final String SUBJECT_PERMISSIONS = "subject_permissions";
+
+    /**
      * キャッシュ名のセット
      */
     public static final Set<String> CACHE_NAMES = Set.of(
-            JWK, REGISTERED_CLIENT, REGISTERED_CLIENT_ID_MAP, USER_CLAIMS
+            JWK, REGISTERED_CLIENT, REGISTERED_CLIENT_ID_MAP, USER_CLAIMS, SUBJECT_PERMISSIONS
     );
 }

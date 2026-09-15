@@ -49,6 +49,7 @@ app:
         registered_client: "expireAfterWrite=10m,maximumSize=100"
         registered_client_id_map: "expireAfterWrite=10m,maximumSize=9999"
         user_claims: "expireAfterWrite=15m"
+        subject_permissions: "expireAfterWrite=10m"
 
 #ToDo: テスト用と敏感情報などを別ファイルに移動する（ビルド流れ調整合わせて）
 management:

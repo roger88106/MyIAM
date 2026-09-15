@@ -1,5 +1,6 @@
 package com.myiam.module.auth.server.token;
 
+import com.myiam.module.auth.permdir.PermissionDirectory;
 import com.myiam.module.auth.userdir.UserDirectory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -11,7 +12,9 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * JWT トークンのカスタマイザー。<br />
@@ -25,6 +28,10 @@ class JwkEncodingOAuth2TokenCustomizer implements OAuth2TokenCustomizer<JwtEncod
      * ユーザーディレクトリ。
      */
     private final UserDirectory userDirectory;
+    /**
+     * 権限ディレクトリ。
+     */
+    private final PermissionDirectory permissionDirectory;
 
     /**
      * トークンカスタマイズ
@@ -92,6 +99,14 @@ class JwkEncodingOAuth2TokenCustomizer implements OAuth2TokenCustomizer<JwtEncod
                     context.getClaims().claim(StandardClaimNames.GIVEN_NAME, claims.givenName());
                     context.getClaims().claim(StandardClaimNames.NAME, claims.familyName() + " " + claims.givenName());
                 });
+
+        // ロール取得
+        permissionDirectory.findPermissions(userId).ifPresentOrElse(
+                permissions -> {
+                    // ロール取得成功する場合、JWT クレーム設定
+                    context.getClaims().claim(CustomJwtClaimNames.ROLES, permissions.roles());
+                },
+                () -> context.getClaims().claim(CustomJwtClaimNames.ROLES, Set.of()));
     }
 
     /**
@@ -115,8 +130,10 @@ class JwkEncodingOAuth2TokenCustomizer implements OAuth2TokenCustomizer<JwtEncod
                 // ユーザークレーム取得成功する場合、JWT クレーム設定
                 .ifPresent(claims -> {
                     context.getClaims().claim(StandardClaimNames.PREFERRED_USERNAME, claims.username());
-                    context.getClaims().claim(StandardClaimNames.EMAIL, claims.email());
                 });
+
+        // 権限をトークンに設定する
+        setPermissionsClaim(context, userId);
     }
 
     /**
@@ -130,5 +147,35 @@ class JwkEncodingOAuth2TokenCustomizer implements OAuth2TokenCustomizer<JwtEncod
 
         // クライアント名称を設定
         context.getClaims().claim(CustomJwtClaimNames.CLIENT_NAME, context.getRegisteredClient().getClientName());
+
+        // 権限をトークンに設定する
+        setPermissionsClaim(context, context.getRegisteredClient().getClientId());
+    }
+
+    /**
+     * 権限のクレームを設定する
+     *
+     * @param context JWT エンコーディングコンテキスト
+     * @param subject OAuthの識別子
+     */
+    private void setPermissionsClaim(JwtEncodingContext context, String subject){
+        // スコープ取得
+        Set<String> scopes = context.getAuthorizedScopes();
+
+        // 権限をトークンに設定する
+        permissionDirectory.findPermissions(subject).ifPresentOrElse(
+                // 値がある場合
+                permissions -> {
+                    // 権限をスコープの積集合を取得
+                    Set<String> scopedPermissions = permissions.permissions()
+                            .stream()
+                            .filter(scopes::contains)
+                            .collect(Collectors.toSet());
+
+                    // 権限を設定する
+                    context.getClaims().claim(CustomJwtClaimNames.PERMISSIONS, scopedPermissions);
+                },
+                // 値がない場合、空のセットを設定する
+                () -> context.getClaims().claim(CustomJwtClaimNames.PERMISSIONS, Set.of()));
     }
 }

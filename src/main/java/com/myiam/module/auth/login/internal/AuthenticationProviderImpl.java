@@ -88,8 +88,8 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
             throw new LockedException("パスワードがロックされています。");
         }
 
-        // 権限リスト設定
-        Collection<GrantedAuthority> authorities = Set.of(); // ToDo: 権限系は再検討要
+        // 権限リスト設定 ※意図的に空設定。認可はトークンの permissions で行う
+        Collection<GrantedAuthority> authorities = Set.of();
 
         //  有効なユーザーを返却
         return AuthenticatedUser.of(userCredential.userId(), userCredential.password(), authorities);

@@ -4,9 +4,12 @@ import com.myiam.module.auth.permdir.PermissionDirectory;
 import com.myiam.module.auth.permdir.SubjectPermissions;
 import com.myiam.module.permission.api.PermissionApi;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
+import static com.myiam.module.auth.shared.constant.CacheNameConst.SUBJECT_PERMISSIONS;
 
 /**
  * 権限ディレクトリ実装
@@ -32,6 +35,7 @@ class PermissionDirectoryImpl implements PermissionDirectory {
      * @return サブジェクト権限情報
      */
     @Override
+    @Cacheable(cacheNames = SUBJECT_PERMISSIONS, key = "#subject", unless = "#result == null")
     public Optional<SubjectPermissions> findPermissions(String subject) {
         // 権限情報取得
         var permissions = mapper.toSubjectPermissions(
