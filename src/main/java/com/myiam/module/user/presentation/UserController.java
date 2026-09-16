@@ -8,6 +8,7 @@ import com.myiam.module.user.presentation.model.request.UpdateProfileRequest;
 import com.myiam.module.user.presentation.model.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
@@ -38,8 +39,6 @@ class UserController {
      */
     private final UserMapper mapper;
 
-    // ToDo: 仮実装、API設計後再修正必須
-
 // ============================== GET ==============================
 
     /**
@@ -49,6 +48,7 @@ class UserController {
      * @return Http 200 : {@link UserResponse}
      */
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAuthority('user:read')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable UUID userId) {
         // ユーザー取得
         var userView = queryService.getUserById(userId);
@@ -66,6 +66,7 @@ class UserController {
      * @return Http 201 : VOID
      */
     @PostMapping("/register")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<Void> register(
             @RequestBody @Validated RegisterUserRequest request
     ) {
@@ -92,6 +93,7 @@ class UserController {
      * @return Http 204 : VOID
      */
     @PutMapping("/{userId}/password")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<Void> changePassword(
             @PathVariable UUID userId,
             @RequestBody @Validated ChangePasswordRequest request
@@ -111,6 +113,7 @@ class UserController {
      * @return Http 204 : VOID
      */
     @PutMapping("/{userId}/profile")
+    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<Void> updateProfile(
             @PathVariable UUID userId,
             @RequestBody @Validated UpdateProfileRequest request
@@ -129,6 +132,7 @@ class UserController {
      * @return Http 204 : VOID
      */
     @PutMapping("/{userId}/disable")
+    @PreAuthorize("hasAuthority('user:delete')")
     public ResponseEntity<Void> disableUser(@PathVariable UUID userId) {
         // ユーザー無効化
         commandService.disableUser(mapper.toDisableCommand(userId));
