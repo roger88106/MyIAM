@@ -17,6 +17,10 @@ public enum CommonErrorCode implements ErrorCodeProvider {
      */
     CONCURRENT_MODIFICATION(ErrorType.CONFLICT_ERROR, CommonMessage.CONCURRENT_MODIFICATION),
     /**
+     * 権限不足エラー
+     */
+    FORBIDDEN(ErrorType.FORBIDDEN_ERROR, CommonMessage.FORBIDDEN),
+    /**
      * リポジトリ復元エラー
      */
     RESTORE_ERROR(ErrorType.RESTORE_ERROR, CommonMessage.SYSTEM_ERROR),

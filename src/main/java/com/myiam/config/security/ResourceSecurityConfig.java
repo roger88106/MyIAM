@@ -4,16 +4,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * リソースサーバーのセキュリティ設定
  */
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 class ResourceSecurityConfig {
     /**
      * 認証　フィルターチェン
@@ -54,7 +59,14 @@ class ResourceSecurityConfig {
      */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        // ToDo 権限実装後、認証ロジックを追加する
-        return new JwtAuthenticationConverter();
+        // 権限(permission)用の変換クラス設定
+        var permissionsConverter = new JwtGrantedAuthoritiesConverter();
+        permissionsConverter.setAuthoritiesClaimName("permissions");
+        permissionsConverter.setAuthorityPrefix("");
+
+        // Jwt用の変換クラス設定
+        var converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(permissionsConverter);
+        return converter;
     }
 }

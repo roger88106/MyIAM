@@ -17,6 +17,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -103,6 +104,19 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(detail.getStatus())
                 .body(detail);
+    }
+
+    /**
+     * 認可例外のハンドラー<br />
+     * {@code @PreAuthorize} 等のメソッドレベル認可で拒否された場合に発生する。
+     *
+     * @param ex {@link AccessDeniedException} 認可例外
+     * @return Http 403 + 例外明細
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        // 共通エラーコードのビジネス例外に変換し、ビジネス例外のハンドラーに委譲する
+        return handleBusinessException(BusinessException.of(CommonErrorCode.FORBIDDEN), request);
     }
 
     /**
@@ -194,6 +208,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             return switch (errorType) {
                 case ErrorType.NOT_FOUND_ERROR -> HttpStatus.NOT_FOUND;
                 case ErrorType.CONFLICT_ERROR -> HttpStatus.CONFLICT;
+                case ErrorType.FORBIDDEN_ERROR -> HttpStatus.FORBIDDEN;
                 default -> HttpStatus.BAD_REQUEST;
             };
 

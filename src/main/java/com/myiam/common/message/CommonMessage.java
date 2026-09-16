@@ -29,6 +29,11 @@ public class CommonMessage {
      */
     public static final I18nMessage SYSTEM_ERROR = I18nMessage.of(Code.SYSTEM_ERROR);
 
+    /**
+     * この操作を行う権限がありません。
+     */
+    public static final I18nMessage FORBIDDEN = I18nMessage.of(Code.FORBIDDEN);
+
     // ============================== コード定義 ==============================
 
     /**
@@ -55,5 +60,10 @@ public class CommonMessage {
          * 予期しないエラーが発生しました。
          */
         public static final String SYSTEM_ERROR = "myiam.common.system_error";
+
+        /**
+         * この操作を行う権限がありません。
+         */
+        public static final String FORBIDDEN = "myiam.common.forbidden";
     }
 }
