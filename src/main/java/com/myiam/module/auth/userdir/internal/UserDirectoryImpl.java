@@ -3,7 +3,7 @@ package com.myiam.module.auth.userdir.internal;
 import com.myiam.module.auth.userdir.UserClaims;
 import com.myiam.module.auth.userdir.UserCredential;
 import com.myiam.module.auth.userdir.UserDirectory;
-import com.myiam.module.user.api.auth.AuthUserApi;
+import com.myiam.module.identity.api.auth.AuthUserApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;

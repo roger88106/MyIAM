@@ -6,13 +6,13 @@
 --
 -- スキーマ構成：
 --   auth       : OAuth2 認可サーバー（クライアント / JWK / 同意）
---   user       : ユーザー
+--   identity   : アイデンティティ（ユーザー）
 --   permission : 権限（ロール / 権限 / 割当）
 --   common     : Spring Modulith イベント発行テーブル
 -- ============================================================================
 
 create schema if not exists auth;
-create schema if not exists "user";
+create schema if not exists identity;
 create schema if not exists permission;
 create schema if not exists common;
 
@@ -162,10 +162,10 @@ comment on column auth.oauth2_authorization_consent.is_deleted is '削除フラ�
 comment on column auth.oauth2_authorization_consent.version is 'バージョン:共通カラム';
 
 -- ============================================================================
--- user
+-- identity
 -- ============================================================================
 
-create table "user".users
+create table identity.users
 (
     id                  uuid                                               not null
         constraint user_pk
@@ -188,52 +188,52 @@ create table "user".users
     version             bigint                   default 0                 not null
 );
 
-comment on table "user".users is 'ユーザー';
+comment on table identity.users is 'ユーザー';
 
-comment on column "user".users.id is 'ユーザー ID';
+comment on column identity.users.id is 'ユーザー ID';
 
-comment on column "user".users.username is 'ユーザー名';
+comment on column identity.users.username is 'ユーザー名';
 
-comment on column "user".users.email is 'ユーザーメールアドレス';
+comment on column identity.users.email is 'ユーザーメールアドレス';
 
-comment on column "user".users.password is 'パスワード';
+comment on column identity.users.password is 'パスワード';
 
-comment on column "user".users.enabled is '有効フラグ';
+comment on column identity.users.enabled is '有効フラグ';
 
-comment on column "user".users.password_changed_at is 'パスワード変更日時';
+comment on column identity.users.password_changed_at is 'パスワード変更日時';
 
-comment on column "user".users.last_login_at is '最終ログイン日時';
+comment on column identity.users.last_login_at is '最終ログイン日時';
 
-comment on column "user".users.password_locked is 'パスワードロック中フラグ';
+comment on column identity.users.password_locked is 'パスワードロック中フラグ';
 
-comment on column "user".users.created_at is '作成日時';
+comment on column identity.users.created_at is '作成日時';
 
-comment on column "user".users.created_by is '監査フィールド: 作成者';
+comment on column identity.users.created_by is '監査フィールド: 作成者';
 
-comment on column "user".users.updated_at is '監査フィールド: 更新日時';
+comment on column identity.users.updated_at is '監査フィールド: 更新日時';
 
-comment on column "user".users.updated_by is '監査フィールド: 更新者';
+comment on column identity.users.updated_by is '監査フィールド: 更新者';
 
-comment on column "user".users.version is 'バージョン';
+comment on column identity.users.version is 'バージョン';
 
-create table "user".user_profiles
+create table identity.user_profiles
 (
     id          uuid not null
         constraint user_profile_pk
             primary key
         constraint user_profile_userid_fk
-            references "user".users,
+            references identity.users,
     family_name varchar(50),
     given_name  varchar(50)
 );
 
-comment on table "user".user_profiles is 'ユーザープロファイル';
+comment on table identity.user_profiles is 'ユーザープロファイル';
 
-comment on column "user".user_profiles.id is 'ユーザー ID';
+comment on column identity.user_profiles.id is 'ユーザー ID';
 
-comment on column "user".user_profiles.family_name is '姓';
+comment on column identity.user_profiles.family_name is '姓';
 
-comment on column "user".user_profiles.given_name is '名前';
+comment on column identity.user_profiles.given_name is '名前';
 
 -- ============================================================================
 -- common

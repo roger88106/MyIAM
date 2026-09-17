@@ -2,7 +2,7 @@ package com.myiam.module.auth.userdir.internal;
 
 import com.myiam.module.auth.userdir.UserClaims;
 import com.myiam.module.auth.userdir.UserCredential;
-import com.myiam.module.user.api.auth.AuthUserApiResponse;
+import com.myiam.module.identity.api.auth.AuthUserApiResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

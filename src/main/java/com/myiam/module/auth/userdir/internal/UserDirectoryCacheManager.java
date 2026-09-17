@@ -1,7 +1,7 @@
 package com.myiam.module.auth.userdir.internal;
 
 import com.myiam.module.auth.config.bean.AuthCacheManager;
-import com.myiam.module.user.event.ProfileUpdated;
+import com.myiam.module.identity.event.ProfileUpdated;
 import org.springframework.cache.Cache;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;

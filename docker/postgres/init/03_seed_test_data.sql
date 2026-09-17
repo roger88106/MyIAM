@@ -12,7 +12,7 @@
 
 -- ============================== テストユーザー ==============================
 -- sub = cc2b8ab4-3a3e-4583-9926-9f8cdef13dd9
-insert into "user".users
+insert into identity.users
     (id, username, email, password, enabled, password_changed_at, last_login_at, password_locked,
      created_at, created_by, version)
 values
@@ -29,7 +29,7 @@ values
      0)
 on conflict (id) do nothing;
 
-insert into "user".user_profiles (id, family_name, given_name)
+insert into identity.user_profiles (id, family_name, given_name)
 values
     ('cc2b8ab4-3a3e-4583-9926-9f8cdef13dd9', 'テスト', '太郎')
 on conflict (id) do nothing;
