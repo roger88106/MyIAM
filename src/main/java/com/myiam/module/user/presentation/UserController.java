@@ -66,7 +66,6 @@ class UserController {
      * @return Http 201 : VOID
      */
     @PostMapping("/register")
-    @PreAuthorize("hasAuthority('user:write')")
     public ResponseEntity<Void> register(
             @RequestBody @Validated RegisterUserRequest request
     ) {

@@ -1,7 +1,7 @@
 package com.myiam.module.user.presentation.model.request;
 
-import com.myiam.module.user.presentation.validation.Email;
-import com.myiam.module.user.presentation.validation.Password;
+import com.myiam.module.user.presentation.validation.ValidEmail;
+import com.myiam.module.user.presentation.validation.ValidPassword;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,11 +15,11 @@ import jakarta.validation.constraints.NotNull;
  */
 public record RegisterUserRequest(
         @NotEmpty
-        @Email
+        @ValidEmail
         String email,
 
         @NotEmpty
-        @Password
+        @ValidPassword
         String password,
 
         @Valid

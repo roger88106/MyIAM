@@ -32,6 +32,7 @@ class ErrorControllerImpl implements ErrorController {
         Object message = request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
         String description = (message != null && StringUtils.hasText(message.toString()))
                 ? message.toString()
+                // ToDo: i18n
                 : "認証処理中にエラーが発生しました。";
 
         // エラー情報をモデルに追加

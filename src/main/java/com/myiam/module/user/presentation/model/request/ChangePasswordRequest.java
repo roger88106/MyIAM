@@ -1,6 +1,6 @@
 package com.myiam.module.user.presentation.model.request;
 
-import com.myiam.module.user.presentation.validation.Password;
+import com.myiam.module.user.presentation.validation.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -11,10 +11,10 @@ import jakarta.validation.constraints.NotBlank;
  */
 public record ChangePasswordRequest(
         @NotBlank
-        @Password
+        @ValidPassword
         String oldPassword,
 
         @NotBlank
-        @Password
+        @ValidPassword
         String newPassword) {
 }

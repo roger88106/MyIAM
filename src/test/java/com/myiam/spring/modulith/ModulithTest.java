@@ -1,4 +1,4 @@
-package com.spring.modulith;
+package com.myiam.spring.modulith;
 
 import com.myiam.MyIamApplication;
 import org.junit.jupiter.api.Test;

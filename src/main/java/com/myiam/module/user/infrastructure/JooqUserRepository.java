@@ -71,7 +71,7 @@ class JooqUserRepository implements UserRepository {
         // ユーザー取得
         return dsl.select()
                 .from(USERS)
-                .join(UserProfiles.USER_PROFILES)
+                .leftJoin(UserProfiles.USER_PROFILES)
                 .on(USERS.ID.eq(UserProfiles.USER_PROFILES.ID))
                 .where(USERS.ID.eq(id))
                 .fetchOptional()
@@ -141,13 +141,6 @@ class JooqUserRepository implements UserRepository {
                 .setUpdatedBy("system") // ToDo: ユーザーIDを設定する
                 // バージョン
                 .setVersion(nowVersion + 1);
-
-
-        // 排除項目設定
-        usersRecord.touched(USERS.CREATED_AT, false);
-        usersRecord.touched(USERS.CREATED_BY, false);
-        profilesRecord.touched(USERS.CREATED_AT, false);
-        profilesRecord.touched(USERS.CREATED_BY, false);
 
         // ユーザーのアグリゲートルート更新
         int affected = dsl.update(USERS)

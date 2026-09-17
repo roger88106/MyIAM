@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = Password.Validator.class)
-public @interface Password {
+@Constraint(validatedBy = ValidPassword.Validator.class)
+public @interface ValidPassword {
     /**
      * デフォルトメッセージ：フォーマットが不正です。
      */
@@ -31,7 +31,7 @@ public @interface Password {
     /**
      * パスワード（明文）用のバリデータ
      */
-    class Validator implements ConstraintValidator<Password, String> {
+    class Validator implements ConstraintValidator<ValidPassword, String> {
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
             if (value == null || value.isEmpty()) return true;

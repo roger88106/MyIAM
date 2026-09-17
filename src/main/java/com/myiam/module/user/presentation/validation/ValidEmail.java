@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = Email.Validator.class)
-public @interface Email {
+@Constraint(validatedBy = ValidEmail.Validator.class)
+public @interface ValidEmail {
     /**
      * デフォルトメッセージ：フォーマットが不正です。
      */
@@ -30,7 +30,7 @@ public @interface Email {
     /**
      * パスワード（明文）用のバリデータ
      */
-    class Validator implements ConstraintValidator<Email, String> {
+    class Validator implements ConstraintValidator<ValidEmail, String> {
         @Override
         public boolean isValid(String value, ConstraintValidatorContext context) {
             if (value == null || value.isEmpty()) return true;
