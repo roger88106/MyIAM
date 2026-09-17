@@ -10,6 +10,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/18/data
+      # 初回起動時（volume が空のとき）のみ実行される初期化スクリプト
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
 
   redis:
     image: redis:8-alpine
