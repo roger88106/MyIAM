@@ -36,6 +36,9 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
     /** パスワードエンコーダー */
     private final PasswordEncoder encoder;
 
+    /** ログイン失敗カウンター */
+    private final LoginAttemptCounter attemptCounter;
+
     /**
      * 指定された認証要求クラスをサポートするかどうかを判定する。<br />
      * ※現行はユーザーパスワードのみ支援する
@@ -106,8 +109,16 @@ class AuthenticationProviderImpl implements AuthenticationProvider {
         // パスワードエンコーダーを使用した暗号化パスワードの照合
         String rawPassword = Objects.requireNonNull(authentication.getCredentials()).toString();
         if (!encoder.matches(rawPassword, user.getPasswordValue())) {
+            // 失敗を記録し、閾値に達した場合はロックする
+            if (attemptCounter.recordFailure(user.id())) {
+                userDirectory.lockPassword(user.id());
+                throw new LockedException("パスワードがロックされました。");
+            }
             throw new BadCredentialsException("アカウントまたはパスワードが正しくありません。");
         }
+
+        // 認証成功のため、失敗カウントをリセットする
+        attemptCounter.reset(user.id());
 
         // ファクター付与権限（パスワード認証）の構築
         return FactorGrantedAuthority

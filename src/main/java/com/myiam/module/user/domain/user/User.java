@@ -166,6 +166,51 @@ public class User extends AggregateRoot {
         registerEvent(UserDisabled.of(id));
     }
 
+    /**
+     * ログインを記録する。
+     */
+    public void recordLogin() {
+        // ログイン記録
+        status = status.recordLogin();
+
+        // イベント登録：ユーザーがログインした
+        registerEvent(UserLoggedIn.of(id));
+    }
+
+    /**
+     * パスワードをロックする。<br />
+     * ※既にロック済みの場合は何もしない。
+     */
+    public void lockPassword() {
+        // 既にロック済みの場合、何もしない
+        if (status.passwordLocked()) {
+            return;
+        }
+
+        // ロック
+        status = status.lockPassword();
+
+        // イベント登録：ユーザーのパスワードがロックされた
+        registerEvent(UserLocked.of(id));
+    }
+
+    /**
+     * パスワードのロックを解除する。<br />
+     * ※ロックされていない場合は何もしない。
+     */
+    public void unlockPassword() {
+        // ロックされていない場合、何もしない
+        if (!status.passwordLocked()) {
+            return;
+        }
+
+        // ロック解除
+        status = status.unlockPassword();
+
+        // イベント登録：ユーザーのパスワードロックが解除された
+        registerEvent(UserUnlocked.of(id));
+    }
+
 // ============================== ドメインイベント関連処理 ==============================
 
     /**

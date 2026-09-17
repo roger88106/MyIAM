@@ -73,5 +73,36 @@ public record UserStatus(boolean enabled, Instant createdAt, Instant lastLoginAt
                 .build();
     }
 
-    // ============================== 状態更新系 ==============================
+    /**
+     * ログインを記録する
+     *
+     * @return 最終ログイン日時を更新した後のステータス
+     */
+    public UserStatus recordLogin() {
+        return this.toBuilder()
+                .lastLoginAt(Instant.now())
+                .build();
+    }
+
+    /**
+     * パスワードをロックする
+     *
+     * @return ロック後のステータス
+     */
+    public UserStatus lockPassword() {
+        return this.toBuilder()
+                .passwordLocked(true)
+                .build();
+    }
+
+    /**
+     * パスワードのロックを解除する
+     *
+     * @return ロック解除後のステータス
+     */
+    public UserStatus unlockPassword() {
+        return this.toBuilder()
+                .passwordLocked(false)
+                .build();
+    }
 }

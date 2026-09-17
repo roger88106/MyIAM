@@ -55,4 +55,24 @@ class UserDirectoryImpl implements UserDirectory {
                 .map(mapper::toUserClaims);
     }
 
+    /**
+     * パスワードをロックする
+     *
+     * @param userId ユーザー ID
+     */
+    @Override
+    public void lockPassword(UUID userId) {
+        authUserApi.lockPassword(userId);
+    }
+
+    /**
+     * ログインを記録する
+     *
+     * @param userId ユーザー ID
+     */
+    @Override
+    public void recordLogin(UUID userId) {
+        authUserApi.recordLogin(userId);
+    }
+
 }

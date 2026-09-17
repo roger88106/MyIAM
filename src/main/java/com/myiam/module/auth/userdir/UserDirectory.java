@@ -24,4 +24,18 @@ public interface UserDirectory {
      * @return ユーザークレーム
      */
     Optional<UserClaims> findClaims(UUID userId);
+
+    /**
+     * パスワードをロックする
+     *
+     * @param userId ユーザー ID
+     */
+    void lockPassword(UUID userId);
+
+    /**
+     * ログインを記録する
+     *
+     * @param userId ユーザー ID
+     */
+    void recordLogin(UUID userId);
 }

@@ -37,8 +37,6 @@ class AuthenticationFailureHandlerImpl implements AuthenticationFailureHandler {
         // ログ出力
         log.warn("login failed: user={}, type={}", request.getParameter("username"), exception.getClass().getSimpleName());
 
-        // ToDo: 認証失敗カウンター実装（lockout はここに入る）
-
         // エラーキーを session に載せて（後続の GET /login で読み出す）ログイン画面へリダイレクト
         request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, exception);
         response.sendRedirect(request.getContextPath() + loginPath);

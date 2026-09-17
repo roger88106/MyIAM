@@ -18,6 +18,13 @@ spring:
       port: 16379
   modulith:
     detection-strategy: explicitly-annotated
+    events:
+      jdbc:
+        schema: common
+        # DDL は docker/postgres/init/01_schema.sql で管理するため無効化
+        # ※有効のままだと初期化後に SET search_path TO user が実行され、user が予約語のため構文エラーになる
+        schema-initialization:
+          enabled: false
   security:
     oauth2:
       authorizationserver:
@@ -42,6 +49,9 @@ jwt:
 app:
   security:
     login-path: "/login"
+    lockout:
+      max-attempts: 5
+      window: PT15M
   cache:
     auth:
       specs:

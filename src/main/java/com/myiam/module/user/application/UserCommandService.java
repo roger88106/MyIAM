@@ -3,7 +3,10 @@ package com.myiam.module.user.application;
 import com.myiam.common.error.exception.BusinessException;
 import com.myiam.module.user.application.model.command.ChangePasswordCommand;
 import com.myiam.module.user.application.model.command.DisableUserCommand;
+import com.myiam.module.user.application.model.command.LockPasswordCommand;
+import com.myiam.module.user.application.model.command.RecordLoginCommand;
 import com.myiam.module.user.application.model.command.RegisterUserCommand;
+import com.myiam.module.user.application.model.command.UnlockPasswordCommand;
 import com.myiam.module.user.application.model.command.UpdateProfileCommand;
 import com.myiam.module.user.domain.user.User;
 import com.myiam.module.user.domain.user.UserErrorCode;
@@ -117,6 +120,62 @@ public class UserCommandService {
 
         // ユーザー無効化
         user.disable();
+
+        // ユーザー保存
+        userRepository.save(user);
+    }
+
+    // ============================== 認証連携用 ==============================
+
+    /**
+     * ログイン記録
+     *
+     * @param command ログイン記録コマンド
+     */
+    @Transactional
+    public void recordLogin(RecordLoginCommand command) {
+
+        // ユーザー取得
+        var user = findUserById(command.userId());
+
+        // ログイン記録
+        user.recordLogin();
+
+        // ユーザー保存
+        userRepository.save(user);
+    }
+
+    /**
+     * パスワードロック
+     *
+     * @param command パスワードロックコマンド
+     */
+    @Transactional
+    public void lockPassword(LockPasswordCommand command) {
+
+        // ユーザー取得
+        var user = findUserById(command.userId());
+
+        // パスワードロック
+        user.lockPassword();
+
+        // ユーザー保存
+        userRepository.save(user);
+    }
+
+    /**
+     * パスワードロック解除
+     *
+     * @param command パスワードロック解除コマンド
+     */
+    @Transactional
+    public void unlockPassword(UnlockPasswordCommand command) {
+
+        // ユーザー取得
+        var user = findUserById(command.userId());
+
+        // パスワードロック解除
+        user.unlockPassword();
 
         // ユーザー保存
         userRepository.save(user);

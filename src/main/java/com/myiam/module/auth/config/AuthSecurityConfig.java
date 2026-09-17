@@ -7,12 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
@@ -74,6 +76,7 @@ class AuthSecurityConfig {
      *
      * @param http HTTP セキュリティ設定
      * @param authenticationProvider 認証プロバイダー
+     * @param authenticationSuccessHandler 認証成功ハンドラー
      * @param authenticationFailureHandler 認証失敗ハンドラー
      * @return 認証処理フィルターチェン
      */
@@ -82,11 +85,12 @@ class AuthSecurityConfig {
     public SecurityFilterChain authenticationSecurityFilterChain(
             HttpSecurity http,
             AuthenticationProvider authenticationProvider,
+            AuthenticationSuccessHandler authenticationSuccessHandler,
             AuthenticationFailureHandler authenticationFailureHandler
     ) {
         return http
-                // 認証プロバイダー適用
-                .authenticationProvider(authenticationProvider)
+                // 認証マネージャー適用 ※parent を持たせない（グローバル側の同一プロバイダーによる二重実行を防ぐ）
+                .authenticationManager(new ProviderManager(authenticationProvider))
                 // ログインパスにマッチするリクエストのみ認証処理を適用
                 .securityMatcher(loginPath)
                 // リクエストごとの認可ルールの設定
@@ -95,6 +99,8 @@ class AuthSecurityConfig {
                 .formLogin(form -> form
                         // カスタムログインページのパスを指定
                         .loginPage(loginPath)
+                        // 認証成功時のハンドラー
+                        .successHandler(authenticationSuccessHandler)
                         // 認証失敗時のハンドラー
                         .failureHandler(authenticationFailureHandler)
                         // ログインページへのアクセスを全ユーザーに許可

@@ -8,7 +8,7 @@ import java.util.UUID;
  * ユーザードメインのイベント
  */
 public sealed interface UserEvent extends DomainEvent
-        permits UserRegistered, UserDisabled, PasswordChanged, ProfileUpdated {
+        permits UserRegistered, UserDisabled, PasswordChanged, ProfileUpdated, UserLocked, UserUnlocked, UserLoggedIn {
 
     UUID userId();
 }
