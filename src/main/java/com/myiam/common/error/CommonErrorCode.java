@@ -21,6 +21,10 @@ public enum CommonErrorCode implements ErrorCodeProvider {
      */
     FORBIDDEN(ErrorType.FORBIDDEN_ERROR, CommonMessage.FORBIDDEN),
     /**
+     * リクエスト内容の検証エラー
+     */
+    INVALID_REQUEST(ErrorType.VALIDATION_ERROR, CommonMessage.INVALID_REQUEST),
+    /**
      * リポジトリ復元エラー
      */
     RESTORE_ERROR(ErrorType.RESTORE_ERROR, CommonMessage.SYSTEM_ERROR),

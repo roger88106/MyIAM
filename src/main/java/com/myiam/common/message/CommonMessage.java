@@ -34,6 +34,11 @@ public class CommonMessage {
      */
     public static final I18nMessage FORBIDDEN = I18nMessage.of(Code.FORBIDDEN);
 
+    /**
+     * 入力内容に誤りがあります。
+     */
+    public static final I18nMessage INVALID_REQUEST = I18nMessage.of(Code.INVALID_REQUEST);
+
     // ============================== コード定義 ==============================
 
     /**
@@ -65,5 +70,10 @@ public class CommonMessage {
          * この操作を行う権限がありません。
          */
         public static final String FORBIDDEN = "myiam.common.forbidden";
+
+        /**
+         * 入力内容に誤りがあります。
+         */
+        public static final String INVALID_REQUEST = "myiam.common.invalid_request";
     }
 }

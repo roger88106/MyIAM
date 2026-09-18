@@ -14,10 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -25,6 +28,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -56,6 +61,10 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * ProblemDetail追加パラメータ：トレース ID
      */
     private static final String DETAIL_PROPERTY_TRACE_ID = "traceId";
+    /**
+     * ProblemDetail追加パラメータ：フィールド検証エラー一覧
+     */
+    private static final String DETAIL_PROPERTY_ERRORS = "errors";
 
     // ============================== 例外ハンドラー ==============================
 
@@ -104,6 +113,32 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .status(detail.getStatus())
                 .body(detail);
+    }
+
+    /**
+     * リクエスト検証例外のハンドラー<br />
+     * {@code @Validated} で拒否されたフィールドごとのメッセージを {@code errors} に列挙する。
+     *
+     * @param ex      {@link MethodArgumentNotValidException} 検証例外
+     * @param headers HTTP ヘッダー
+     * @param status  HTTP ステータス
+     * @param request リクエスト
+     * @return Http 400 + 例外明細
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
+        // 共通エラーコードのビジネス例外に変換し、ビジネス例外のハンドラーに委譲する
+        ResponseEntity<ProblemDetail> response = handleBusinessException(
+                BusinessException.of(CommonErrorCode.INVALID_REQUEST), request);
+
+        // フィールドごとの検証エラーを列挙する
+        List<FieldValidationError> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> new FieldValidationError(fieldError.getField(), fieldError.getDefaultMessage()))
+                .toList();
+        Objects.requireNonNull(response.getBody()).setProperty(DETAIL_PROPERTY_ERRORS, errors);
+
+        // 戻り値設定
+        return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
     /**
@@ -260,5 +295,14 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @Builder
     private record ThreadInfo(@Nullable String traceId, @Nullable String spanId) {
+    }
+
+    /**
+     * フィールド検証エラー
+     *
+     * @param field   フィールド名
+     * @param message エラーメッセージ
+     */
+    private record FieldValidationError(String field, @Nullable String message) {
     }
 }
