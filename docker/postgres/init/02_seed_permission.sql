@@ -14,7 +14,8 @@ values
     (gen_random_uuid(), 'user:delete',     'ユーザー削除',               'system'),
     (gen_random_uuid(), 'role:read',       'ロール閲覧',                 'system'),
     (gen_random_uuid(), 'role:assign',     'ロール割当',                 'system'),
-    (gen_random_uuid(), 'permission:read', '権限閲覧',                   'system')
+    (gen_random_uuid(), 'permission:read', '権限閲覧',                   'system'),
+    (gen_random_uuid(), 'actuator:read',   '運用情報閲覧（actuator）',   'system')
 on conflict (permission) do nothing;
 
 -- ============================== roles ==============================
@@ -33,12 +34,12 @@ from permission.roles r, permission.permissions p
 where r.role = 'ADMIN'
 on conflict do nothing;
 
--- USER_MANAGER: 管理画面 + ユーザー読み書き + ロール閲覧（削除・割当なし）
+-- USER_MANAGER: 管理画面 + ユーザー読み書き + ロール閲覧 + 運用情報（削除・割当なし）
 insert into permission.roles_permissions (role_id, permission_id)
 select r.id, p.id
 from permission.roles r, permission.permissions p
 where r.role = 'USER_MANAGER'
-  and p.permission in ('admin:access', 'user:read', 'user:write', 'role:read')
+  and p.permission in ('admin:access', 'user:read', 'user:write', 'role:read', 'actuator:read')
 on conflict do nothing;
 
 -- VIEWER: 管理画面 + 閲覧系のみ

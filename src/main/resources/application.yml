@@ -69,4 +69,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: beans,conditions
+        # 全環境で公開するのは health のみ（死活監視用）。開発用の追加公開は application-local.yml
+        include: health
+  endpoint:
+    health:
+      # 外部には UP / DOWN のみ返す（DB / Redis の個別状態は出さない）
+      show-details: never

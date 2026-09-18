@@ -1,0 +1,20 @@
+# ============================================================================
+# ローカル開発用の上書き設定
+#
+# 有効化：起動時に spring.profiles.active=local を指定する
+#   - IntelliJ：実行構成 → Active profiles に local
+#   - Gradle  ：./gradlew bootRun --args='--spring.profiles.active=local'
+#
+# application.yml の同名キーを上書きする。ここに書くのは「開発中だけ欲しいもの」に限る。
+# ============================================================================
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # 開発用：Bean 一覧 / 自動構成の判定結果 / 環境変数 / マッピング一覧
+        include: health,beans,conditions,env,mappings
+  endpoint:
+    health:
+      # 開発中は DB / Redis の個別状態も見たい
+      show-details: always

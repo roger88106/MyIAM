@@ -23,10 +23,9 @@ class DefaultSecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(
             HttpSecurity http
     ) {
-        // ToDo: "/actuator/**"の扱い再検討
         return http
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/actuator/**", "/error/**").permitAll()
+                        .requestMatchers("/error/**").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .anyRequest().authenticated())
                 .build();

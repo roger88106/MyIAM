@@ -32,9 +32,13 @@ class ResourceSecurityConfig {
             HttpSecurity http
     ) {
         return http
-                // 全ての RESTful API を対象として設定
-                .securityMatcher("/api/**")
+                // 全ての RESTful API と actuator を対象として設定
+                .securityMatcher("/api/**", "/actuator/**")
                 .authorizeHttpRequests(authorize -> authorize
+                        // 死活監視用の health のみ匿名で公開
+                        .requestMatchers("/actuator/health").permitAll()
+                        // それ以外の actuator は権限必須（監視システムはサービスアカウントの Bearer token で叩く）
+                        .requestMatchers("/actuator/**").hasAuthority("actuator:read")
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .anyRequest().authenticated()
                 )
