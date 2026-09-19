@@ -1,9 +1,14 @@
-import org.yaml.snakeyaml.Yaml
+import nu.studer.gradle.jooq.JooqGenerate
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Logging
+import org.testcontainers.postgresql.PostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
+import org.testcontainers.utility.MountableFile
 
 /*
  * MyIAM 認証サービス - ビルド構成定義 (Gradle Kotlin DSL)
- * 
- * Spring Boot の基盤設定、依存関係管理、および jooq によるデータベースコード自動生成パイプラインを定義します。
+ *
+ * ※バージョン番号などの定義はすべて gradle/libs.versions.toml で管理する。
  */
 
 buildscript {
@@ -11,34 +16,27 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // application.yml を解析するためのライブラリ
-        classpath("org.yaml:snakeyaml:2.3")
+        // jooq コード生成用の使い捨て PostgreSQL を起動する
+        classpath(libs.testcontainers.postgresql)
     }
 }
 
 plugins {
     java
-    id("org.springframework.boot") version "4.0.6"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("nu.studer.jooq") version "10.2.1"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.jooq)
 }
-
-extra["jooq.version"] = "3.21.4"
 
 group = "com.myiam"
 version = "0.0.1-SNAPSHOT"
 
+// Boot BOM が管理する jooq の版をカタログの版で上書きする
+extra["jooq.version"] = libs.versions.jooq.get()
+
 java {
     toolchain {
-        // Java バージョン設定
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
-}
-
-configurations {
-    compileOnly {
-        // アノテーションプロセッサーをコンパイル時にも参照可能にする
-        extendsFrom(configurations.annotationProcessor.get())
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
 }
 
@@ -48,125 +46,123 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.modulith:spring-modulith-bom:2.1.0")
+        mavenBom(libs.spring.modulith.bom.get().toString())
     }
 }
 
+// -----------------------------------------------------------------------------
+// source set
+//   src/test            : 単体（純 JVM、Docker 不要）
+//   src/integrationTest : 統合（Spring コンテキスト + Testcontainers、Docker 必須）
+//   ※ dependencies より前に定義すること
+// -----------------------------------------------------------------------------
+sourceSets {
+    create("integrationTest") {
+        compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+        runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    }
+}
+
+configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
+
+// -----------------------------------------------------------------------------
+// 依存関係
+// -----------------------------------------------------------------------------
 dependencies {
-    // --- Spring Boot ---
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.modulith:spring-modulith-starter-core")
-    implementation("org.springframework.modulith:spring-modulith-events-api")
-    implementation("org.springframework.modulith:spring-modulith-events-jdbc")
-    implementation("org.springframework.modulith:spring-modulith-events-jackson")
-    implementation("org.springframework.boot:spring-boot-starter-jooq")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-zipkin")
+    // --- Spring Boot / Modulith ---
+    implementation(libs.bundles.spring.boot.web)
+    implementation(libs.bundles.spring.boot.data)
+    implementation(libs.bundles.spring.boot.oauth2)
+    implementation(libs.bundles.spring.modulith)
 
-    // --- データベース & jooq 拡張 ---
-    runtimeOnly("org.postgresql:postgresql")
-    jooqGenerator("org.postgresql:postgresql:42.7.7")
-    implementation("org.jooq:jooq-jackson3-extensions:3.21.4")
+    // --- データベース ---
+    runtimeOnly(libs.postgresql)
+    jooqGenerator(libs.postgresql)
+    implementation(libs.jooq.jackson3.extensions)
 
-    // --- ユーティリティ (Lombok, MapStruct) ---
-    implementation("org.mapstruct:mapstruct:1.6.3")
-    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
-    compileOnly("org.projectlombok:lombok:1.18.44")
-    annotationProcessor("org.projectlombok:lombok:1.18.44")
+    // --- コード生成（Lombok / MapStruct） ---
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+    implementation(libs.mapstruct)
+    annotationProcessor(libs.mapstruct.processor)
+    annotationProcessor(libs.lombok.mapstruct.binding)
 
-    // Lombok と MapStruct の連携用バインディング
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    // --- ユーティリティ ---
+    implementation(libs.caffeine)
+    implementation(libs.guava)
+    implementation(libs.jmolecules.ddd)
 
-    // AOP
-    implementation("org.aspectj:aspectjweaver")
+    // --- テスト：単体 ---
+    testImplementation(libs.spring.boot.starter.test)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
-    // キャッシュ
-    implementation("com.github.ben-manes.caffeine:caffeine")
-
-    // ハッシュアルゴリズム
-    implementation("com.google.guava:guava:33.6.0-android")
-
-    // jMolecules
-    implementation("org.jmolecules:jmolecules-ddd:1.9.0")
-
-    // --- テストフレームワーク ---
-    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // --- テスト：統合 ---
+    "integrationTestImplementation"(libs.bundles.integration.test)
 }
 
 // -----------------------------------------------------------------------------
-// データベース接続設定の動的読込 (Single Source of Truth: application.yml)
+// テスト task
+//   ./gradlew test             → 単体のみ
+//   ./gradlew integrationTest  → 統合のみ
+//   ./gradlew check / build    → 両方
 // -----------------------------------------------------------------------------
-val dbConfig = mutableMapOf<String, String>()
-val ymlFile = file("src/main/resources/application.yml")
-
-if (ymlFile.exists()) {
-    val yaml = Yaml()
-    val config = ymlFile.inputStream().use { yaml.load<Map<String, Any>>(it) }
-    
-    // YAML 構造から datasource 情報を抽出
-    val spring = config["spring"] as? Map<*, *>
-    val datasource = spring?.get("datasource") as? Map<*, *>
-    
-    dbConfig["url"] = datasource?.get("url")?.toString() ?: ""
-    dbConfig["user"] = datasource?.get("username")?.toString() ?: ""
-    dbConfig["password"] = datasource?.get("password")?.toString() ?: ""
-    dbConfig["driver"] = datasource?.get("driver-class-name")?.toString() ?: "org.postgresql.Driver"
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
+val integrationTest = tasks.register<Test>("integrationTest") {
+    description = "統合テストを実行する（Docker 必須）"
+    group = "verification"
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    useJUnitPlatform()
+    shouldRunAfter(tasks.test)
+}
+
+tasks.check { dependsOn(integrationTest) }
+
 // -----------------------------------------------------------------------------
-// jooq コード生成タスク設定
+// jooq コード生成
+//   スキーマの単一真相は docker/postgres/init/*.sql。
+//   生成時に Testcontainers で使い捨ての PostgreSQL を起動し、その SQL を流してから生成する。
+//   → compose の DB を起動していなくてもビルドできる（Docker は必要）
 // -----------------------------------------------------------------------------
+val jooqSchemaDir = layout.projectDirectory.dir("docker/postgres/init")
+
 jooq {
-    // Spring Boot BOM から jooq の推奨バージョンを自動取得
-    val jooqVersion = "3.21.4"
-    version.set(jooqVersion)
+    version.set(libs.versions.jooq.get())
 
     configurations {
         create("main") {
             jooqConfiguration.apply {
-                // ログ出力レベルの設定
-                logging = org.jooq.meta.jaxb.Logging.INFO
+                logging = Logging.INFO
 
-                // データベース接続情報
+                // 接続情報 ※url は generateJooq 実行時にコンテナのものへ差し替える
                 jdbc.apply {
-                    driver = dbConfig["driver"]
-                    url = dbConfig["url"]
-                    user = dbConfig["user"]
-                    password = dbConfig["password"]
+                    driver = "org.postgresql.Driver"
+                    user = "user"
+                    password = "password"
                 }
 
-                // ジェネレーター設定
                 generator.apply {
                     name = "org.jooq.codegen.JavaGenerator"
 
-                    // スキャン対象のデータベース設定
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
-                        
-                        // 全てのユーザスキーマを対象とする
+                        // 全ユーザースキーマを対象、システム系は除外
                         includes = ".*"
-                        // システム関連は除外する
                         excludes = "(information_schema|pg_catalog|pg_toast|pg_temp_.*|pg_toast_temp_.*)\\..*|" +
                                    "pgp_.*|armor|dearmor|crypt|digest|hmac|gen_salt|gen_random_bytes|gen_random_uuid"
-                        
-                        // バージョン管理用カラムの指定
+                        // 楽観ロック用カラム
                         recordVersionFields = "version"
-
-                        // timestamptz を Instant に自動変換する設定
+                        // 型の強制変換：timestamptz → Instant、jsonb → JsonNode
                         forcedTypes.addAll(listOf(
-                            org.jooq.meta.jaxb.ForcedType().apply {
+                            ForcedType().apply {
                                 name = "INSTANT"
                                 includeTypes = "(?i)timestamptz|timestamp\\ with\\ time\\ zone"
                             },
-                            org.jooq.meta.jaxb.ForcedType().apply {
+                            ForcedType().apply {
                                 userType = "tools.jackson.databind.JsonNode"
                                 isJsonConverter = true
                                 includeTypes = "jsonb"
@@ -174,19 +170,13 @@ jooq {
                         ))
                     }
 
-                    // 生成コードのオプション
                     generate.apply {
-                        // Setter メソッドのフルーエント API を有効化
                         isFluentSetters = true
-                        // Java 8 の Date/Time API を使用
                         isJavaTimeTypes = true
                     }
 
-                    // 生成先のパッケージとパス
                     target.apply {
-                        // 出力先パッケージ定義
                         packageName = "com.myiam.jooq"
-                        // 出力先はデフォルトを使用
                     }
                 }
             }
@@ -194,17 +184,37 @@ jooq {
     }
 }
 
+tasks.named<JooqGenerate>("generateJooq") {
+    // スキーマ SQL が変わったら再生成する
+    inputs.dir(jooqSchemaDir)
+
+    // 使い捨て PostgreSQL（docker compose と同じイメージ・同じ init SQL）
+    val container = PostgreSQLContainer(DockerImageName.parse("postgres:18-alpine"))
+        .withDatabaseName("my_iam")
+        .withUsername("user")
+        .withPassword("password")
+        .withCopyFileToContainer(
+            MountableFile.forHostPath(jooqSchemaDir.asFile.path),
+            "/docker-entrypoint-initdb.d"
+        )
+
+    // jooq { } ブロックで組んだ Configuration と同一インスタンスを参照している
+    val jdbc = jooq.configurations.getByName("main").jooqConfiguration.jdbc
+
+    doFirst {
+        container.start()
+        jdbc.url = container.jdbcUrl
+    }
+    doLast {
+        container.stop()
+    }
+}
+
 // -----------------------------------------------------------------------------
-// コンパイルオプション設定
+// コンパイルオプション
 // -----------------------------------------------------------------------------
 tasks.withType<JavaCompile> {
     // リフレクション用にメソッド引数名を保持
     options.compilerArgs.add("-parameters")
-    // コンパイル時の文字エンコーディングを UTF-8 に固定
     options.encoding = "UTF-8"
-}
-
-tasks.named<Test>("test") {
-    // JUnit 5 使用設定
-    useJUnitPlatform()
 }
