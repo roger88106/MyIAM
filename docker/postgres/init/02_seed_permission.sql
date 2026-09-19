@@ -19,11 +19,14 @@ values
 on conflict (permission) do nothing;
 
 -- ============================== roles ==============================
+-- USER はユーザー登録時に自動割当されるデフォルトロール（権限なし）。
+-- ロール名は PermissionCommandService.DEFAULT_ROLE と一致させること。
 insert into permission.roles (id, role, role_name, enabled, created_by)
 values
     (gen_random_uuid(), 'ADMIN',        '管理者',         true, 'system'),
     (gen_random_uuid(), 'USER_MANAGER', 'ユーザー管理者', true, 'system'),
-    (gen_random_uuid(), 'VIEWER',       '閲覧者',         true, 'system')
+    (gen_random_uuid(), 'VIEWER',       '閲覧者',         true, 'system'),
+    (gen_random_uuid(), 'USER',         '一般ユーザー',   true, 'system')
 on conflict (role) do nothing;
 
 -- ============================== roles_permissions ==============================
