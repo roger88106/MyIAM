@@ -72,6 +72,7 @@ jmolecules-events = { module = "org.jmolecules:jmolecules-events" }
 # --- テスト ---
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+spring-boot-starter-webmvc-test = { module = "org.springframework.boot:spring-boot-starter-webmvc-test" }
 spring-modulith-starter-test = { module = "org.springframework.modulith:spring-modulith-starter-test" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
@@ -108,6 +109,7 @@ jmolecules = [
 integration-test = [
     "spring-modulith-starter-test",
     "spring-boot-testcontainers",
+    "spring-boot-starter-webmvc-test",
     "testcontainers-postgresql",
 ]
 
