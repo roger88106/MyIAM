@@ -11,7 +11,6 @@ import com.myiam.common.message.MessageHelper;
 import io.micrometer.tracing.Tracer;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
@@ -234,7 +233,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param ex {@link BaseException}
      * @return Http ステータス
      */
-    private @NotNull HttpStatus resolveHttpStatus(BaseException ex) {
+    private @NonNull HttpStatus resolveHttpStatus(BaseException ex) {
         ErrorType errorType = ex.getErrorDetail().errorCode().type();
 
         // 例外種類により HTTP ステータス を戻す
@@ -261,7 +260,7 @@ class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @param ex {@link BaseException} 自定義例外ベース
      * @return エラーコード
      */
-    private @NotNull ErrorCode resolveErrorCode(BaseException ex) {
+    private @NonNull ErrorCode resolveErrorCode(BaseException ex) {
         var errorCode = ex.getErrorDetail().errorCode();
         return switch (errorCode.exposure()) {
             case EXPOSABLE -> errorCode;
