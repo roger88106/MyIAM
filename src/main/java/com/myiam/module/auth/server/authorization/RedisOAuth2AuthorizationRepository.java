@@ -53,6 +53,13 @@ class RedisOAuth2AuthorizationRepository {
     private static final String REDIS_KEY_TOKEN_MAP = "oauth2:authorization:token:%s:%s";
 
     /**
+     * ローテーション済みリフレッシュトークン キー<br />
+     * ローテーションで無効化された旧リフレッシュトークンから、所属していた認可IDを引くためのマップ（再利用検知用）
+     * <ul><li>パラメータ：トークンハッシュ</li></ul>
+     */
+    private static final String REDIS_KEY_ROTATED_REFRESH_TOKEN = "oauth2:authorization:rotated-rt:%s";
+
+    /**
      * サポート対象のトークンタイプ
      */
     private static final Set<String> SUPPORTED_TOKEN_TYPES = Set.of(
@@ -79,6 +86,8 @@ class RedisOAuth2AuthorizationRepository {
         // 既存の認可情報が存在する場合、既存情報を削除 ※既存の逆引きインデックス含み
         OAuth2Authorization existing = findById(authorization.getId());
         if (existing != null) {
+            // リフレッシュトークンがローテーションされた場合、旧トークンを再利用検知用に記録する
+            recordRotatedRefreshToken(existing, authorization);
             remove(existing);
         }
 
@@ -160,6 +169,52 @@ class RedisOAuth2AuthorizationRepository {
     }
 
     /**
+     * ローテーション済みリフレッシュトークンから、所属していた認可IDを検索する。
+     *
+     * @param refreshToken リフレッシュトークン文字列
+     * @return 認可ID、該当しない場合は null
+     */
+    @Nullable
+    String findAuthorizationIdByRotatedRefreshToken(@NonNull String refreshToken) {
+        return redisTemplate.opsForValue().get(REDIS_KEY_ROTATED_REFRESH_TOKEN.formatted(hashToken(refreshToken)));
+    }
+
+    /**
+     * リフレッシュトークンのローテーションを記録する。<br />
+     * 旧トークンのハッシュから認可IDを引けるようにし、旧トークンの残り有効期限だけ保持する。
+     *
+     * @param existing 保存前の認可情報
+     * @param updated  保存後の認可情報
+     */
+    private void recordRotatedRefreshToken(OAuth2Authorization existing, OAuth2Authorization updated) {
+        var oldToken = existing.getRefreshToken();
+        var newToken = updated.getRefreshToken();
+
+        // 旧トークンがない、または値が変わっていない場合はローテーションではない
+        if (oldToken == null || newToken == null
+                || oldToken.getToken().getTokenValue().equals(newToken.getToken().getTokenValue())) {
+            return;
+        }
+
+        // 旧トークンの残り有効期限を計算する ※既に期限切れなら記録不要
+        Instant expiresAt = oldToken.getToken().getExpiresAt();
+        long ttlBySecond = expiresAt != null
+                ? expiresAt.getEpochSecond() - Instant.now().getEpochSecond()
+                : 0;
+        if (ttlBySecond <= 0) {
+            return;
+        }
+
+        // 旧トークンのハッシュ → 認可ID を記録する
+        redisTemplate.opsForValue().set(
+                REDIS_KEY_ROTATED_REFRESH_TOKEN.formatted(hashToken(oldToken.getToken().getTokenValue())),
+                existing.getId(),
+                ttlBySecond,
+                TimeUnit.SECONDS
+        );
+    }
+
+    /**
      * 認可ID キーを取得する
      *
      * @param authorizationId 認可ID
@@ -178,9 +233,7 @@ class RedisOAuth2AuthorizationRepository {
      */
     private Set<String> getTokenMapKeys(String token, String tokenType) {
         // tokenをハッシュ化
-        String tokenHash = Hashing.sha256()
-                .hashString(token, StandardCharsets.UTF_8)
-                .toString();
+        String tokenHash = hashToken(token);
 
         // TokenTypeが指定しない場合、サポート対象の全種類を返却する
         if (tokenType == null) {
@@ -271,4 +324,15 @@ class RedisOAuth2AuthorizationRepository {
      */
     private record TokenSnapshot(String type, String value, Instant expiresAt) {}
 
+    /**
+     * トークン文字列をハッシュ化する
+     *
+     * @param token トークン文字列
+     * @return SHA-256 ハッシュ（16進文字列）
+     */
+    private String hashToken(String token) {
+        return Hashing.sha256()
+                .hashString(token, StandardCharsets.UTF_8)
+                .toString();
+    }
 }
