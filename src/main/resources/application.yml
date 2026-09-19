@@ -1,3 +1,10 @@
+# ============================================================================
+# 全環境共通の設定
+#
+# 環境依存の値（DB / Redis の接続先、issuer、開発用ログレベル等）はここに書かない。
+# ローカル開発は application-local.yml、それ以外は環境変数 / 外部設定で与える。
+# ============================================================================
+
 server:
   port: 8080
   servlet:
@@ -7,15 +14,8 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/my_iam
-    username: user
-    password: password
   jooq:
     sql-dialect: POSTGRES
-  data:
-    redis:
-      host: localhost
-      port: 16379
   modulith:
     detection-strategy: explicitly-annotated
     events:
@@ -25,18 +25,12 @@ spring:
         # ※有効のままだと初期化後に SET search_path TO user が実行され、user が予約語のため構文エラーになる
         schema-initialization:
           enabled: false
-  security:
-    oauth2:
-      authorizationserver:
-        issuer: http://localhost:8080
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080
 
 logging:
   level:
     root: INFO
-    com.myiam: DEBUG
+  charset:
+    console: UTF-8
   pattern:
     correlation: "[%X{traceId:-}] [%X{spanId:-}] "
 
@@ -61,7 +55,6 @@ app:
         user_claims: "expireAfterWrite=15m"
         subject_permissions: "expireAfterWrite=10m"
 
-#ToDo: テスト用と敏感情報などを別ファイルに移動する（ビルド流れ調整合わせて）
 management:
   tracing:
     sampling:
