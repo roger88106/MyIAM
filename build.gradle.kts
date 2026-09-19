@@ -47,6 +47,7 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom(libs.spring.modulith.bom.get().toString())
+        mavenBom(libs.jmolecules.bom.get().toString())
     }
 }
 
@@ -91,7 +92,7 @@ dependencies {
     // --- ユーティリティ ---
     implementation(libs.caffeine)
     implementation(libs.guava)
-    implementation(libs.jmolecules.ddd)
+    implementation(libs.bundles.jmolecules)
 
     // --- テスト：単体 ---
     testImplementation(libs.spring.boot.starter.test)
