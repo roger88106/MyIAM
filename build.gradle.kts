@@ -23,6 +23,7 @@ buildscript {
 
 plugins {
     java
+    idea
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.jooq)
@@ -66,6 +67,14 @@ sourceSets {
 
 configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
 configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
+
+// IntelliJ に integrationTest をテストソースとして認識させる（@Autowired 等の Spring 補助が効くようになる）
+idea {
+    module {
+        testSources.from(sourceSets["integrationTest"].java.srcDirs)
+        testResources.from(sourceSets["integrationTest"].resources.srcDirs)
+    }
+}
 
 // -----------------------------------------------------------------------------
 // 依存関係
