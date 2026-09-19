@@ -18,7 +18,7 @@ import java.util.UUID;
  * ユーザードメインの Aggregate Root
  */
 @org.jmolecules.ddd.annotation.AggregateRoot
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 public class User extends AggregateRoot {
 
 // ============================== フィールド定義 ==============================
