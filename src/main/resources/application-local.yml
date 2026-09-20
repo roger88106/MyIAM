@@ -1,0 +1,46 @@
+# ============================================================================
+# ローカル開発用の設定
+#
+# 有効化：起動時に spring.profiles.active=local を指定する
+#   - IntelliJ：実行構成 → Active profiles に local
+#   - Gradle  ：./gradlew bootRun --args='--spring.profiles.active=local'
+#
+# 接続先は docker-compose.yml のものに合わせている。
+# ============================================================================
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/my_iam
+    username: user
+    password: password
+  data:
+    redis:
+      host: localhost
+      port: 16379
+  security:
+    oauth2:
+      authorizationserver:
+        issuer: http://localhost:8080
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
+
+logging:
+  level:
+    com.myiam: DEBUG
+    org.springframework.security: DEBUG
+    # ※TRACE はトークンの中身まで出力される。local 以外では有効にしないこと
+    org.springframework.security.oauth2: TRACE
+    # SQL とバインドパラメータ
+    org.jooq.tools.LoggerListener: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # 開発用：Bean 一覧 / 自動構成の判定結果 / 環境変数 / マッピング一覧
+        include: health,beans,conditions,env,mappings
+  endpoint:
+    health:
+      # 開発中は DB / Redis の個別状態も見たい
+      show-details: always

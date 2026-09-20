@@ -1,0 +1,111 @@
+package com.myiam.module.auth.config;
+
+import com.myiam.config.security.SecurityOrder;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+
+/**
+ * SpringSecurity のフィルターチェーン構成クラス
+ */
+@Configuration
+@EnableWebSecurity
+class AuthSecurityConfig {
+
+    /**
+     * ログインページのパス
+     */
+    @Value("${app.security.login-path}")
+    private String loginPath;
+
+    /**
+     * 認可　フィルターチェーン
+     *
+     * @param http HTTP セキュリティ設定
+     * @return 認可サーバー用のフィルタチェーン
+     */
+    @Bean
+    @Order(SecurityOrder.AUTHORIZATION)
+    public SecurityFilterChain authorizationServerSecurityFilterChain(
+            HttpSecurity http
+    ) {
+
+        // OAuth2 認可サーバー
+        var authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer()
+                // OIDC (OpenID Connect) を有効化する
+                .oidc(Customizer.withDefaults());
+
+        return http
+                // 認可サーバーのエンドポイントを対象として設定
+                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                // 認可サーバーの構成
+                .with(authorizationServerConfigurer, configurer -> {
+                })
+                // リクエストの認可設定
+                .authorizeHttpRequests((authorize) -> authorize
+                        // 認可エンドポイントはユーザー認証を必須とする
+                        .requestMatchers("/oauth2/authorize").authenticated()
+                        // その経由エンドポイント（トークンエンドポイント等）は各フィルタで認可制御を行うためここでは許可
+                        .anyRequest().permitAll())
+                // 例外ハンドリングの設定
+                .exceptionHandling((exceptions) -> exceptions
+                        // 未認証時にHTMLリクエスト（ブラウザ等）の場合はログイン画面にリダイレクトする
+                        .defaultAuthenticationEntryPointFor(
+                                new LoginUrlAuthenticationEntryPoint(loginPath),
+                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)))
+                // デフォルトの JwtCustomizerを設定
+                .oauth2ResourceServer((rs) -> rs.jwt(Customizer.withDefaults()))
+                .build();
+    }
+
+    /**
+     * 認証　フィルターチェン
+     *
+     * @param http HTTP セキュリティ設定
+     * @param authenticationProvider 認証プロバイダー
+     * @param authenticationSuccessHandler 認証成功ハンドラー
+     * @param authenticationFailureHandler 認証失敗ハンドラー
+     * @return 認証処理フィルターチェン
+     */
+    @Bean
+    @Order(SecurityOrder.AUTHENTICATION)
+    public SecurityFilterChain authenticationSecurityFilterChain(
+            HttpSecurity http,
+            AuthenticationProvider authenticationProvider,
+            AuthenticationSuccessHandler authenticationSuccessHandler,
+            AuthenticationFailureHandler authenticationFailureHandler
+    ) {
+        return http
+                // 認証マネージャー適用 ※parent を持たせない（グローバル側の同一プロバイダーによる二重実行を防ぐ）
+                .authenticationManager(new ProviderManager(authenticationProvider))
+                // ログインパスにマッチするリクエストのみ認証処理を適用
+                .securityMatcher(loginPath)
+                // リクエストごとの認可ルールの設定
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                // フォームログインの設定
+                .formLogin(form -> form
+                        // カスタムログインページのパスを指定
+                        .loginPage(loginPath)
+                        // 認証成功時のハンドラー
+                        .successHandler(authenticationSuccessHandler)
+                        // 認証失敗時のハンドラー
+                        .failureHandler(authenticationFailureHandler)
+                        // ログインページへのアクセスを全ユーザーに許可
+                        .permitAll())
+                .build();
+    }
+
+}

@@ -1,0 +1,70 @@
+# ============================================================================
+# 全環境共通の設定
+#
+# 環境依存の値（DB / Redis の接続先、issuer、開発用ログレベル等）はここに書かない。
+# ローカル開発は application-local.yml、それ以外は環境変数 / 外部設定で与える。
+# ============================================================================
+
+server:
+  port: 8080
+  servlet:
+    session:
+      tracking-modes: cookie
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jooq:
+    sql-dialect: POSTGRES
+  modulith:
+    detection-strategy: explicitly-annotated
+    events:
+      jdbc:
+        schema: common
+        # DDL は docker/postgres/init/01_schema.sql で管理するため無効化
+        # ※有効のままだと初期化後に SET search_path TO user が実行され、user が予約語のため構文エラーになる
+        schema-initialization:
+          enabled: false
+
+logging:
+  level:
+    root: INFO
+  charset:
+    console: UTF-8
+  pattern:
+    correlation: "[%X{traceId:-}] [%X{spanId:-}] "
+
+jwt:
+  key:
+    rotation:
+      cron: "0 0 1 1 * *"
+    ttl: P35D
+
+app:
+  security:
+    login-path: "/login"
+    lockout:
+      max-attempts: 5
+      window: PT15M
+  cache:
+    auth:
+      specs:
+        jwk: "expireAfterWrite=10m"
+        registered_client: "expireAfterWrite=10m,maximumSize=100"
+        registered_client_id_map: "expireAfterWrite=10m,maximumSize=9999"
+        user_claims: "expireAfterWrite=15m"
+        subject_permissions: "expireAfterWrite=10m"
+
+management:
+  tracing:
+    sampling:
+      probability: 0.0
+  endpoints:
+    web:
+      exposure:
+        # 全環境で公開するのは health のみ（死活監視用）。開発用の追加公開は application-local.yml
+        include: health
+  endpoint:
+    health:
+      # 外部には UP / DOWN のみ返す（DB / Redis の個別状態は出さない）
+      show-details: never
