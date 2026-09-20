@@ -6,17 +6,19 @@
 
 1 つのデプロイ単位（モジュラーモノリス）の中に 3 つのモジュールを置く。
 
+```mermaid
+flowchart TB
+    auth["<b>auth</b><br/>AuthN / AuthZ（Spring Authorization Server）"]
+    identity["<b>identity</b><br/>User"]
+    permission["<b>permission</b><br/>SubjectRoles"]
+
+    auth -- "userdir（腐敗防止層）" --> identity
+    auth -- "permdir（腐敗防止層）" --> permission
+    permission -. "identity::event を購読" .-> identity
+    auth -. "permission::event を購読" .-> permission
 ```
-          ┌──────────────────────────────┐
-          │            auth              │  AuthN / AuthZ（Spring Authorization Server）
-          │  userdir ──┐     ┌── permdir │  ← 腐敗防止層
-          └────────────┼─────┼───────────┘
-                       ▼     ▼
-        ┌──────────────┐   ┌──────────────┐
-        │   identity   │   │  permission  │
-        │     User     │◄──│ SubjectRoles │  ← identity のイベントを購読
-        └──────────────┘   └──────────────┘
-```
+
+実線 = API 呼び出し、点線 = イベント購読。
 
 | モジュール   | 責務                                                 | ドキュメント                                   |
 |--------------|------------------------------------------------------|------------------------------------------------|

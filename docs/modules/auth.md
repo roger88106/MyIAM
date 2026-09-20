@@ -23,6 +23,29 @@ OAuth2 / OIDC の各エンドポイントは SAS の既定パス（`/oauth2/auth
 
 対応するフロー：Authorization Code + PKCE、Refresh Token、Client Credentials。
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Client
+    participant AS as auth
+    participant ID as identity
+    participant PM as permission
+
+    C->>AS: GET /oauth2/authorize（PKCE）
+    AS-->>C: 302 /login
+    C->>AS: POST /login
+    AS->>ID: userdir：ユーザー取得
+    ID-->>AS: ユーザー情報（資格情報・状態）
+    Note over AS: パスワード検証・ロックアウト判定
+    AS->>ID: userdir：recordLogin (イベント)
+    AS-->>C: 302 redirect_uri?code=...
+    C->>AS: POST /oauth2/token（code + verifier）
+    AS->>PM: permdir：subject の権限取得
+    PM-->>AS: permission 一覧（cache）
+    Note over AS: permissions = 権限 ∩ scope
+    AS-->>C: access_token（permissions）/ id_token（roles）/ refresh_token
+```
+
 ## Filter chain
 
 | chain                | 対象                 | 認証                                       |
